@@ -2,6 +2,7 @@
 data/archive
 data/stat_log.txt
 data/player_data.json
+data/config.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
