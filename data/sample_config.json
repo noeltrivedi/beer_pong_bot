@@ -1,0 +1,8 @@
+{
+    "bot_id" : "get this from GroupMe",
+    "debug" : true, //prints messages to console instead of actually sending them, etc
+    "manual_push" : false, //set to true if you do not want to automatically push updates to the spreadsheet
+    "use_spreadsheet" : true, //if true, you must supply google credentials
+    "google_credentials_filename" : "get this from the Google Developer Console",
+    "listening_port" : 2200 //port doesn't really matter but make sure it's the right one for your callback url
+}

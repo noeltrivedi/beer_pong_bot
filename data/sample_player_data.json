@@ -1,0 +1,59 @@
+{
+  "Kraus": {
+    "beers_drank": 0,
+    "games_carried": 0,
+    "nicknames": [
+      "ben",
+      "kraus",
+      "obikraus canobeer"
+    ],
+    "wins": 0,
+    "teammate_stats": {
+      "Gnole": {
+        "wins": 0,
+        "player_cups": 0,
+        "games": 0,
+        "teammate_cups": 0,
+        "games_was_carried": 0,
+        "cups_left": 0,
+        "games_carried": 0
+      }
+    },
+    "games": 0,
+    "games_was_carried": 0,
+    "trolls": 0,
+    "cups": 0
+  },
+  "Gnole": {
+    "beers_drank": 0,
+    "games_carried": 0,
+    "nicknames": [
+      "noel",
+      "dg",
+      "trivedi",
+      "delta gnole",
+      "gnole",
+      "testy",
+      "nole",
+      "theextralongdickofthelaw",
+      "dog",
+      "skankaroo"
+    ],
+    "wins": 0,
+    "teammate_stats": {
+      "Kraus": {
+        "wins": 0,
+        "player_cups": 0,
+        "games": 0,
+        "teammate_cups": 0,
+        "games_was_carried": 0,
+        "cups_left": 0,
+        "games_carried": 0
+      }
+    },
+    "games": 0,
+    "games_was_carried": 0,
+    "trolls": 0,
+    "cups": 0
+  }
+}
