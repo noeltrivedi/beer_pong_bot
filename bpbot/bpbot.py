@@ -41,7 +41,7 @@ class BeerPongBot():
             'beat ' +
             regex_name + regex_cup_count + regex_name + regex_cup_count)
         self.spreadsheet_request_regex = re.compile(r"^!stats *$")
-        self.player_stat_request_regex = re.compile(r'^!stats ' + regex_name)
+        self.player_stat_request_regex = re.compile(r'^!stats ' + regex_name + '$')
         self.team_stat_request_regex = re.compile(r'^!stats ' + regex_name + '- ' + regex_name)
         self.register_regex = re.compile(r'^!register ' + regex_name)
         self.new_nickname_regex = re.compile(r'^!add nickname ' + regex_name + '= ' + regex_name)
