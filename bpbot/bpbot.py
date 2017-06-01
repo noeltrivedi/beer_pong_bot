@@ -249,7 +249,8 @@ class BeerPongBot():
             trollCount,
             beerCount,
             winCount,
-            gameCount)
+            gameCount
+            )
         self.send_message(stat_string)
 
     def handle_game_results(self, m):
@@ -268,7 +269,7 @@ class BeerPongBot():
             self.update_beer_count()
 
             if self.should_log:
-                self.log_stats(message)
+                self.log_stats(m.group(0))
 
             self.send_message(self.success_message)
             if self.failure:
@@ -367,7 +368,7 @@ class BeerPongBot():
             log_file.write('\n')
 
     def persist_player_data(self):
-        if not debug:
+        if not self.debug:
             with open(player_data_file, 'w') as out:
                 json.dump(self.player_data, out, indent=2)
 
@@ -440,7 +441,7 @@ def reload_data():
     #load in stats and pass into bot
     with open(log_file_name) as stats:
         for line in stats:
-            bot.receiveMessage(0, line)
+            bot.receive_message(line)
         bot.full_update_spreadsheet()
 
     bot.should_log = True
