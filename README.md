@@ -74,7 +74,7 @@ This project is licensed under the [MIT License](LICENSE.md)
 ## Acknowledgements
 A special thanks to all of the following:
 
-* The gspread team
+* [pygsheets](https://github.com/nithinmurali/pygsheets)
 * GroupMe
 * University of Southern California's Beer Pong Club
 

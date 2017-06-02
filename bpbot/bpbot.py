@@ -4,7 +4,9 @@ import os.path
 import json
 import urllib2
 import httplib
-import utils
+
+from .sheetsdecorator import SheetsDecorator
+from .messagerouter import MessageRouter
 
 log_file_name = os.path.join('.', 'data', 'stat_log.txt')
 player_data_file = os.path.join('.', 'data', 'player_data.json')
@@ -16,9 +18,9 @@ class BeerPongBot():
         self.manual_push = manual_push
         self.should_log = True #should log to the stat log - only disabled when running over old data
 
-        if not debug and use_spreadsheet:
+        if use_spreadsheet:
             credentials_path = os.path.join('.', 'data', google_credentials_filename)
-            self.spread = utils.SpreadsheetConnector(credentials_path)
+            self.spread = SheetsDecorator(credentials_path)
         else:
             self.spread = None
 
@@ -128,7 +130,11 @@ class BeerPongBot():
         self.nickname_map[name.lower()] = name
 
     def handle_spreadsheet_request(self, m):
-        self.send_message("https://docs.google.com/spreadsheets/d/1ZLwNGBG9Np6H42qf_qu9Rtl4cKOFfhpmJRXkvIH7vVY/edit?usp=drive_web")
+        if self.use_spreadsheet:
+            url = self.spread.get_sheet_url()
+            self.send_message(url)
+        else:
+            self.send_message('The Stats Spreadsheet is currently disabled. You may still request individual stats using "!stats <name>"')
 
     def handle_list_nickname_request(self, m):
         player_name = self.convert_nickname_to_name(m.group(1))
@@ -271,13 +277,15 @@ class BeerPongBot():
             if self.should_log:
                 self.log_stats(m.group(0))
 
-            self.send_message(self.success_message)
-            if self.failure:
-                self.send_message(self.failure_message)
-
-            self.persist_player_data()
             if not self.manual_push:
                 self.update_spreadsheet()
+
+            self.persist_player_data()
+
+            if self.failure:
+                self.send_message(self.failure_message)
+            else:
+                self.send_message(self.success_message)
 
     def add_new_nickname(self, canonical_name, nickname):
         self.player_data[canonical_name]['nicknames'].append(nickname)
@@ -418,11 +426,11 @@ def initialize(bot_id, debug=False, manual_push=False, use_spreadsheet=True, goo
         debug=debug,
         manual_push=manual_push,
         use_spreadsheet=use_spreadsheet,
-        google_credentials_filename=google_credentials_filename
+        google_credentials_filename='client_secret.json'
         )
     return bot
 
-def listen(server_class=HTTPServer, handler_class=utils.MessageRouter, port=80):
+def listen(server_class=HTTPServer, handler_class=MessageRouter, port=80):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
     print('Listening for messages...')
