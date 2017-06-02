@@ -19,6 +19,5 @@ bp.initialize(
     debug=config['debug'],
     manual_push=config['manual_push'],
     use_spreadsheet=config['use_spreadsheet'],
-    google_credentials_filename=config['google_credentials_filename']
     )
 bp.listen(port=config['listening_port']) #blocking call
