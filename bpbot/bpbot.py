@@ -130,7 +130,7 @@ class BeerPongBot():
         self.nickname_map[name.lower()] = name
 
     def handle_spreadsheet_request(self, m):
-        if self.use_spreadsheet:
+        if self.spread is not None:
             url = self.spread.get_sheet_url()
             self.send_message(url)
         else:
