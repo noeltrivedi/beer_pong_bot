@@ -1,3 +1,4 @@
+import bpbot
 import pygsheets
 
 name_col = 1

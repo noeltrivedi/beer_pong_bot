@@ -1,6 +1,6 @@
 from BaseHTTPServer import BaseHTTPRequestHandler
 import json
-
+import bpbot
 #route messages to the bot
 class MessageRouter(BaseHTTPRequestHandler):
     def do_POST(self):
