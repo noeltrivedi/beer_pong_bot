@@ -16,7 +16,8 @@ class BeerPongBot():
         self.bot_id = bot_id
         self.debug = debug
         self.manual_push = manual_push
-        self.should_log = True #should log to the stat log - only disabled when running over old data
+        #should log to the stat log - only disabled when running over old data
+        self.should_log = True
 
         if use_spreadsheet:
             credentials_path = os.path.join('.', 'data', google_credentials_filename)
@@ -31,7 +32,8 @@ class BeerPongBot():
             fn = open(log_file_name, "w")
             fn.close()
 
-        print("Bot initialized")
+        if not debug:
+            print("Bot initialized")
 
     def _init_regexes(self):
         #regex building blocks
@@ -51,6 +53,9 @@ class BeerPongBot():
         self.list_nicknames_request_regex = re.compile(r'^!nicknames ' + regex_name)
         self.help_regex = re.compile(r'^!help *')
 
+        self._construct_regex_action_map()
+
+    def _construct_regex_action_map(self):
         self.regex_action_map = [
             (self.game_results_regex, self.handle_game_results),
             (self.spreadsheet_request_regex, self.handle_spreadsheet_request),
@@ -419,7 +424,7 @@ class BeerPongBot():
                 self.spread.update_player_stats(player, self.player_data[player])
             self.spread.update_game_participation(self.player_data)
 
-def initialize(bot_id, debug=False, manual_push=False, use_spreadsheet=True, google_credentials_filename=None):
+def initialize(bot_id=0, debug=False, manual_push=False, use_spreadsheet=True, google_credentials_filename=None):
     global bot
     bot = BeerPongBot(
         bot_id=bot_id,
