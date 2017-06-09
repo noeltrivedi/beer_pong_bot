@@ -81,7 +81,6 @@ A special thanks to all of the following:
 ## Todo:
 In order of priority:
 
-* Use a logging framework
 * Write a script to set up a GroupMe bot
 * Write more unit tests
 * Write a script to initialize a Stats spreadsheet
