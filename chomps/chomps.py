@@ -4,6 +4,7 @@ import os.path
 import json
 import urllib2
 import httplib
+import logging
 
 from .sheetsdecorator import SheetsDecorator
 from .messagerouter import MessageRouter
@@ -25,6 +26,7 @@ class Chomps():
         else:
             self.spread = None
 
+        self._init_logger()
         self._init_regexes()
         self._load_player_data()
 
@@ -32,8 +34,19 @@ class Chomps():
             fn = open(log_file_name, "w")
             fn.close()
 
-        if not debug:
-            print("Bot initialized")
+        self.logger.debug("Chomps initialized; bot_id=%s; debug=%s; use_spreadsheet=%s", bot_id, debug, use_spreadsheet)
+
+    def _init_logger(self):
+            self.logger = logging.getLogger('chomps')
+            self.logger.setLevel(logging.INFO)
+
+            handler = logging.FileHandler('data/log.txt', delay=False)
+            handler.setLevel(logging.DEBUG)
+            formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+            handler.setFormatter(formatter)
+
+            self.logger.addHandler(handler)
+
 
     def _init_regexes(self):
         #regex building blocks
@@ -57,15 +70,15 @@ class Chomps():
 
     def _construct_regex_action_map(self):
         self.regex_action_map = [
-            (self.game_results_regex, self.handle_game_results),
-            (self.spreadsheet_request_regex, self.handle_spreadsheet_request),
-            (self.player_stat_request_regex, self.handle_player_stat_request),
-            (self.team_stat_request_regex, self.handle_team_stat_request),
-            (self.register_regex, self.handle_register),
-            (self.new_nickname_regex, self.handle_new_nickname),
-            (self.update_regex, self.handle_update_command),
-            (self.list_nicknames_request_regex, self.handle_list_nickname_request),
-            (self.help_regex, self.handle_help_request)
+            ('Game Results', self.game_results_regex, self.handle_game_results),
+            ('Spreadsheet Request', self.spreadsheet_request_regex, self.handle_spreadsheet_request),
+            ('Player Stats Request', self.player_stat_request_regex, self.handle_player_stat_request),
+            ('Team Stats Request', self.team_stat_request_regex, self.handle_team_stat_request),
+            ('New Nickname Request', self.new_nickname_regex, self.handle_new_nickname),
+            ('List Nicknames Request', self.list_nicknames_request_regex, self.handle_list_nickname_request),
+            ('Help Request', self.help_regex, self.handle_help_request),
+            ('Update Command', self.update_regex, self.handle_update_command),
+            ('Register Command', self.register_regex, self.handle_register),
             ]
 
     def _load_player_data(self):
@@ -77,9 +90,10 @@ class Chomps():
                     self.nickname_map[nn] = name
 
     def receive_message(self, message):
-        for regex, action in self.regex_action_map:
+        for tag, regex, action in self.regex_action_map:
             m = regex.match(message)
             if m:
+                self.logger.info('Received message of type %s; msg=\"%s\"', tag, message)
                 action(m)
                 break
 

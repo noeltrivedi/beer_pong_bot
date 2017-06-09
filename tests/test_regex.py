@@ -1,10 +1,12 @@
 import unittest
+import logging
 from mock import MagicMock
 from chomps import chomps
 
 class TestRegexAndMessageRouting(unittest.TestCase):
     def setUp(self):
         chomps.initialize(debug=True, manual_push=True, use_spreadsheet=False)
+        chomps.bot.logger.setLevel(logging.ERROR)
 
     def test_matches_game_results(self):
         msg = 'Alice (4) Bob LastName (8) beat Eve LastName (3) Steve (2)'
