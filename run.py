@@ -4,7 +4,7 @@ import sys
 import os
 import json
 
-import bpbot.bpbot as bp
+import chomps.chomps as chomps
 
 if len(sys.argv) is 2: #config file is specified
     config_file = os.path.normpath(sys.argv[1])
@@ -14,10 +14,10 @@ else:
 with open(config_file) as data_file:
     config = json.load(data_file)
 
-bp.initialize(
+chomps.initialize(
     bot_id=config['bot_id'],
     debug=config['debug'],
     manual_push=config['manual_push'],
     use_spreadsheet=config['use_spreadsheet'],
     )
-bp.listen(port=config['listening_port']) #blocking call
+chomps.listen(port=config['listening_port']) #blocking call

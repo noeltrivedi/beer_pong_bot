@@ -1,6 +1,6 @@
 from BaseHTTPServer import BaseHTTPRequestHandler
 import json
-import bpbot
+import chomps
 #route messages to the bot
 class MessageRouter(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -8,4 +8,4 @@ class MessageRouter(BaseHTTPRequestHandler):
         post_body = self.rfile.read(content_len)
         data = json.loads(post_body)
 
-        bpbot.bot.receive_message(data['text'])
+        chomps.bot.receive_message(data['text'])

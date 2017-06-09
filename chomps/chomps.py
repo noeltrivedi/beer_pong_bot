@@ -11,7 +11,7 @@ from .messagerouter import MessageRouter
 log_file_name = os.path.join('.', 'data', 'stat_log.txt')
 player_data_file = os.path.join('.', 'data', 'player_data.json')
 
-class BeerPongBot():
+class Chomps():
     def __init__(self, bot_id, debug=False, manual_push=False, use_spreadsheet=True, google_credentials_filename=None):
         self.bot_id = bot_id
         self.debug = debug
@@ -155,7 +155,7 @@ class BeerPongBot():
             self.send_message('Cannot find any player with name {}'.format(player_name))
 
     def handle_help_request(self, m):
-        help_message = 'Beer Pong Bot Commands\n'
+        help_message = 'Chomps Commands\n'
         help_message += '<name1> (cup_count) <name2> (cup_count) beat <name3> (cup_count) <name4> (cup_count) : Inputs stats for a given game\n\n'
         help_message += '!stats : Requests a link to the stats spreadsheets\n\n'
         help_message += '!stats <name> : Requests a stat printout of the specified player\n\n'
@@ -426,7 +426,7 @@ class BeerPongBot():
 
 def initialize(bot_id=0, debug=False, manual_push=False, use_spreadsheet=True, google_credentials_filename=None):
     global bot
-    bot = BeerPongBot(
+    bot = Chomps(
         bot_id=bot_id,
         debug=debug,
         manual_push=manual_push,

@@ -1,4 +1,4 @@
-import bpbot
+import chomps
 import pygsheets
 
 name_col = 1
@@ -52,7 +52,7 @@ class SheetsDecorator():
 
         vals = [
             win_percent,
-            bpbot.bot.get_most_common_partner(player_name),
+            chomps.bot.get_most_common_partner(player_name),
             cpg,
             player['cups'],
             player['wins'],
