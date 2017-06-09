@@ -11,7 +11,7 @@ from .messagerouter import MessageRouter
 log_file_name = os.path.join('.', 'data', 'stat_log.txt')
 player_data_file = os.path.join('.', 'data', 'player_data.json')
 
-class BeerPongBot():
+class Chomps():
     def __init__(self, bot_id, debug=False, manual_push=False, use_spreadsheet=True, google_credentials_filename=None):
         self.bot_id = bot_id
         self.debug = debug
@@ -426,7 +426,7 @@ class BeerPongBot():
 
 def initialize(bot_id=0, debug=False, manual_push=False, use_spreadsheet=True, google_credentials_filename=None):
     global bot
-    bot = BeerPongBot(
+    bot = Chomps(
         bot_id=bot_id,
         debug=debug,
         manual_push=manual_push,
