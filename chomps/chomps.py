@@ -14,6 +14,7 @@ player_data_file = os.path.join('.', 'data', 'player_data.json')
 
 class Chomps():
     def __init__(self, bot_id, debug=False, manual_push=False, use_spreadsheet=True, google_credentials_filename=None):
+        self.logger = logging.getLogger('chomps')
         self.bot_id = bot_id
         self.debug = debug
         self.manual_push = manual_push
@@ -26,7 +27,6 @@ class Chomps():
         else:
             self.spread = None
 
-        self._init_logger()
         self._init_regexes()
         self._load_player_data()
 
@@ -34,19 +34,7 @@ class Chomps():
             fn = open(log_file_name, "w")
             fn.close()
 
-        self.logger.debug("Chomps initialized; bot_id=%s; debug=%s; use_spreadsheet=%s", bot_id, debug, use_spreadsheet)
-
-    def _init_logger(self):
-            self.logger = logging.getLogger('chomps')
-            self.logger.setLevel(logging.INFO)
-
-            handler = logging.FileHandler('data/log.txt', delay=False)
-            handler.setLevel(logging.DEBUG)
-            formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-            handler.setFormatter(formatter)
-
-            self.logger.addHandler(handler)
-
+        self.logger.info("Chomps initialized; bot_id=%s; debug=%s; use_spreadsheet=%s", bot_id, debug, use_spreadsheet)
 
     def _init_regexes(self):
         #regex building blocks
@@ -99,7 +87,7 @@ class Chomps():
 
     def register_user(self, name):
         name = name.title()
-        print("Received register user message for \"{}\"".format(name))
+        self.logger.info("Registering user %s", name)
 
         #first add them to the spreadsheet if needed
         if self.spread is not None:
@@ -279,7 +267,6 @@ class Chomps():
         self.send_message(stat_string)
 
     def handle_game_results(self, m):
-        print("Received Stats!")
         all_players_found = self.load_player_stats(m)
         if all_players_found:
             self.failure = False
@@ -335,7 +322,8 @@ class Chomps():
         for player in self.player_stats:
             if player[0].strip().lower() not in self.nickname_map:
                 all_players_found = False
-                self.send_message("Cannot log stats. Player name \"{}\" not found in nickname database".format(player[0]))
+                self.logger.warning('Unable to log stats. Player name \"%s\" not found in nickname database', player[0])
+                self.send_message("Unable to log stats. Player name \"{}\" not found in nickname database".format(player[0]))
                 break
         return all_players_found
 
@@ -352,7 +340,7 @@ class Chomps():
             self.player_data[self.player_stats[i][0]]['beers_drank'] += beers_drank
 
     def send_message(self, message):
-        print("Sending message: {}".format(message))
+        self.logger.info("Sending message; msg=\"%s\"", message)
         if not self.debug:
             data = {"bot_id": self.bot_id, "text": str(message)}
             req = urllib2.Request('https://api.groupme.com/v3/bots/post')
@@ -452,7 +440,7 @@ def initialize(bot_id=0, debug=False, manual_push=False, use_spreadsheet=True, g
 def listen(server_class=HTTPServer, handler_class=MessageRouter, port=80):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
-    print('Listening for messages...')
+    logging.getLogger('chomps').info('Listening for messages on port %d...', port)
     httpd.serve_forever()
 
 def reload_data():
