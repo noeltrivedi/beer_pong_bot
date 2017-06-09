@@ -1,8 +1,7 @@
 tests:
 	python -m unittest discover -s tests/
 
-linux-startup: #starts bpbot in the background, outputting everything to log.txt
-	nohup python -u run.py </dev/null >data/log.txt 2>&1 &
+startup-daemon:
+	nohup python -u run.py&
 
-
-.PHONY: tests startup
+.PHONY: tests startup-daemon
