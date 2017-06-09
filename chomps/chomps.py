@@ -155,7 +155,7 @@ class BeerPongBot():
             self.send_message('Cannot find any player with name {}'.format(player_name))
 
     def handle_help_request(self, m):
-        help_message = 'Beer Pong Bot Commands\n'
+        help_message = 'Chomps Commands\n'
         help_message += '<name1> (cup_count) <name2> (cup_count) beat <name3> (cup_count) <name4> (cup_count) : Inputs stats for a given game\n\n'
         help_message += '!stats : Requests a link to the stats spreadsheets\n\n'
         help_message += '!stats <name> : Requests a stat printout of the specified player\n\n'

@@ -1,6 +1,6 @@
-# Beer Pong Bot
+# Chomps
 
-Beer Pong Bot is a GroupMe bot written in Python which can log and track beer pong stats for multiple players, and create/update a Google sheet containing stats for all players. It was designed to be simple enough for someone several games deep to use it, while still providing enough functionality to make it a useful tool.
+Chomps is a GroupMe bot written in Python which can log and track beer pong stats for multiple players, and create/update a Google sheet containing stats for all players. It was designed to be simple enough for someone several games deep to use it, while still providing enough functionality to make it a useful tool.
 
 ## Features
 * Log game results
@@ -13,7 +13,7 @@ Beer Pong Bot is a GroupMe bot written in Python which can log and track beer po
 ## Getting Started
 
 1. Run the command `pip install -r requirements.txt` to install required dependencies
-2. [Get Google API Credentials](http://gspread.readthedocs.io/en/latest/oauth2.html) and place the `.json` file in the `data/` folder
+2. [Get Google API Credentials](http://gspread.readthedocs.io/en/latest/oauth2.html) and rename the Service Credentials as `data/client_secret.json`
 3. Create a GroupMe bot and save its token and id. Set the callback url to the IP on which you plan to run the bot, with an arbitrary port
 4. Run `python init.py` in the root directory to create blank
 5. Finally, `python run.py` to listen to messages in the GroupMe.
@@ -31,7 +31,7 @@ Note: Whenever a name is required, any valid nickname will work.
 `Alice (6) Bob (4) beat Eve (3) Chuck (4)`
 
 ### Requesting Stats for a Player
-In addition to the Stats spreadsheet, Beer Pong Bot can compile and format stats to be sent to the GroupMe.
+In addition to the Stats spreadsheet, Chomps can compile and format stats to be sent to the GroupMe.
 #### Format
 
 
@@ -65,7 +65,7 @@ Nicknames allow for users to refer to a single player by multiple names. Nicknam
 `!add nickname Eve = Erin`
 
 ### Other
-The functions listed above are only a few of the features of Beer Pong Bot. Sending  the `!help` command will output a printout of all available commands and their format.
+The functions listed above are only a few of the features of Chomps. Sending  the `!help` command will output a printout of all available commands and their format.
 
 
 ## License
@@ -87,4 +87,3 @@ In order of priority:
 * Write a script to initialize a Stats spreadsheet
 * Convert player stat into named tuple
 * Implement functionality to archive stats, and reset all data (new seasons)
-* Find a clever name for the bot
