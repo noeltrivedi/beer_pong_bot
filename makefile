@@ -2,6 +2,9 @@ tests:
 	python -m unittest discover -s tests/
 
 startup-daemon:
-	nohup python -u run.py&
+	python -u run.py&
 
-.PHONY: tests startup-daemon
+setup:
+	echo "Not yet implemented"
+
+.PHONY: tests startup-daemon setup

@@ -13,11 +13,12 @@ Chomps is a GroupMe bot written in Python which can log and track beer pong stat
 ## Getting Started
 
 1. Run the command `pip install -r requirements.txt` to install required dependencies
-2. [Get Google API Credentials](http://gspread.readthedocs.io/en/latest/oauth2.html) and rename the Service Credentials as `data/client_secret.json`
-3. Create a GroupMe bot and save its token and id. Set the callback url to the IP on which you plan to run the bot, with an arbitrary port
-4. Run `python init.py` in the root directory to create blank
-5. Finally, `python run.py` to listen to messages in the GroupMe.
-6. If you prefer to create a daemon instead, run `sh startup.sh` which will create a background python process which pipes output to `data/log.txt`
+2. [Create a GroupMe bot.](https://dev.groupme.com/bots/new) Set the callback url to the IP on which you plan to run the bot, with an arbitrary port.
+3. If you're planning on using the spreadsheet functions, [get Google Sheets OAuth credentials](http://pygsheets.readthedocs.io/en/latest/authorizing.html) and rename the Service Credentials as `data/client_secret.json`. Then run `make setup` to initialize the stats spreadsheet.
+4. Setup the config file and save it as `data/config.json`
+5. Run `make startup-daemon`to create a background process running the bot.
+6. Finally, register some players using `!register <name>` and start playing!
+
 
 ## Basic Usage
 Note: Whenever a name is required, any valid nickname will work.
