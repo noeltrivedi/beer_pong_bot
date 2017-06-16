@@ -13,11 +13,11 @@ log_file_name = os.path.join('.', 'data', 'stat_log.txt')
 player_data_file = os.path.join('.', 'data', 'player_data.json')
 
 class Chomps():
-    def __init__(self, bot_id, debug=False, manual_push=False, use_spreadsheet=True, google_credentials_filename=None):
+    def __init__(self, bot_id, debug=False, use_spreadsheet=True, google_credentials_filename=None):
         self.logger = logging.getLogger('chomps')
         self.bot_id = bot_id
         self.debug = debug
-        self.manual_push = manual_push
+
         #should log to the stat log - only disabled when running over old data
         self.should_log = True
 
@@ -282,8 +282,6 @@ class Chomps():
 
             if self.should_log:
                 self.log_stats(m.group(0))
-
-            if not self.manual_push:
                 self.update_spreadsheet()
 
             self.persist_player_data()
@@ -426,12 +424,11 @@ class Chomps():
                 self.spread.update_player_stats(player, self.player_data[player])
             self.spread.update_game_participation(self.player_data)
 
-def initialize(bot_id=0, debug=False, manual_push=False, use_spreadsheet=True, google_credentials_filename=None):
+def initialize(bot_id=0, debug=False, use_spreadsheet=True):
     global bot
     bot = Chomps(
         bot_id=bot_id,
         debug=debug,
-        manual_push=manual_push,
         use_spreadsheet=use_spreadsheet,
         google_credentials_filename='client_secret.json'
         )
@@ -446,9 +443,6 @@ def listen(server_class=HTTPServer, handler_class=MessageRouter, port=80):
 def reload_data():
     bot.should_log = False
 
-    mp = bot.manual_push
-    bot.manual_push = True
-
     debug = bot.debug
     bot.debug = True #don't want to send messages here
 
@@ -460,5 +454,4 @@ def reload_data():
         bot.full_update_spreadsheet()
 
     bot.should_log = True
-    bot.manual_push = mp
     bot.debug = debug

@@ -17,7 +17,6 @@ with open(config_file) as data_file:
 chomps.initialize(
     bot_id=config['bot_id'],
     debug=config['debug'],
-    manual_push=config['manual_push'],
     use_spreadsheet=config['use_spreadsheet'],
     )
 

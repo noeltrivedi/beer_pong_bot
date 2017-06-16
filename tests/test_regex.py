@@ -6,7 +6,7 @@ from chomps import chomps
 class TestRegexAndMessageRouting(unittest.TestCase):
     def setUp(self):
         logging.getLogger('chomps').setLevel(logging.WARNING)
-        chomps.initialize(debug=True, manual_push=True, use_spreadsheet=False)
+        chomps.initialize(debug=True, use_spreadsheet=False)
 
     def test_matches_game_results(self):
         msg = 'Alice (4) Bob LastName (8) beat Eve LastName (3) Steve (2)'
