@@ -71,11 +71,17 @@ class Chomps():
 
     def _load_player_data(self):
         self.nickname_map = {}
-        with open(player_data_file) as data_file:
-            self.player_data = json.load(data_file)
-            for name in self.player_data:
-                for nn in self.player_data[name]['nicknames']:
-                    self.nickname_map[nn] = name
+        if os.path.exists(player_data_file):
+            with open(player_data_file) as data_file:
+                self.player_data = json.load(data_file)
+                for name in self.player_data:
+                    for nn in self.player_data[name]['nicknames']:
+                        self.nickname_map[nn] = name
+        else:
+            #create the player data file as an empty dict
+            #when players are registered, they'll get added normally
+            self.player_data = {}
+            self.persist_player_data()
 
     def receive_message(self, message):
         for tag, regex, action in self.regex_action_map:
