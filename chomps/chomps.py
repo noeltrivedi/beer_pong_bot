@@ -13,17 +13,19 @@ log_file_name = os.path.join('.', 'data', 'stat_log.txt')
 player_data_file = os.path.join('.', 'data', 'player_data.json')
 
 class Chomps():
-    def __init__(self, bot_id, debug=False, manual_push=False, use_spreadsheet=True, google_credentials_filename=None):
+    def __init__(self, bot_id, debug=False, use_spreadsheet=True, google_credentials_filename=None):
         self.logger = logging.getLogger('chomps')
+        if debug:
+            self._attach_debug_handler()
         self.bot_id = bot_id
         self.debug = debug
-        self.manual_push = manual_push
+
         #should log to the stat log - only disabled when running over old data
         self.should_log = True
 
         if use_spreadsheet:
             credentials_path = os.path.join('.', 'data', google_credentials_filename)
-            self.spread = SheetsDecorator(credentials_path)
+            self.spread = SheetsDecorator(load_spreadsheet=True, credentials=credentials_path)
         else:
             self.spread = None
 
@@ -35,6 +37,14 @@ class Chomps():
             fn.close()
 
         self.logger.info("Chomps initialized; bot_id=%s; debug=%s; use_spreadsheet=%s", bot_id, debug, use_spreadsheet)
+
+    def _attach_debug_handler(self):
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        self.logger.addHandler(ch)
+
 
     def _init_regexes(self):
         #regex building blocks
@@ -71,11 +81,17 @@ class Chomps():
 
     def _load_player_data(self):
         self.nickname_map = {}
-        with open(player_data_file) as data_file:
-            self.player_data = json.load(data_file)
-            for name in self.player_data:
-                for nn in self.player_data[name]['nicknames']:
-                    self.nickname_map[nn] = name
+        if os.path.exists(player_data_file):
+            with open(player_data_file) as data_file:
+                self.player_data = json.load(data_file)
+                for name in self.player_data:
+                    for nn in self.player_data[name]['nicknames']:
+                        self.nickname_map[nn] = name
+        else:
+            #create the player data file as an empty dict
+            #when players are registered, they'll get added normally
+            self.player_data = {}
+            self.persist_player_data()
 
     def receive_message(self, message):
         for tag, regex, action in self.regex_action_map:
@@ -282,8 +298,6 @@ class Chomps():
 
             if self.should_log:
                 self.log_stats(m.group(0))
-
-            if not self.manual_push:
                 self.update_spreadsheet()
 
             self.persist_player_data()
@@ -426,14 +440,13 @@ class Chomps():
                 self.spread.update_player_stats(player, self.player_data[player])
             self.spread.update_game_participation(self.player_data)
 
-def initialize(bot_id=0, debug=False, manual_push=False, use_spreadsheet=True, google_credentials_filename=None):
+def initialize(bot_id=0, debug=False, use_spreadsheet=True, service_credentials=None):
     global bot
     bot = Chomps(
         bot_id=bot_id,
         debug=debug,
-        manual_push=manual_push,
         use_spreadsheet=use_spreadsheet,
-        google_credentials_filename='client_secret.json'
+        google_credentials_filename=service_credentials
         )
     return bot
 
@@ -446,9 +459,6 @@ def listen(server_class=HTTPServer, handler_class=MessageRouter, port=80):
 def reload_data():
     bot.should_log = False
 
-    mp = bot.manual_push
-    bot.manual_push = True
-
     debug = bot.debug
     bot.debug = True #don't want to send messages here
 
@@ -460,5 +470,4 @@ def reload_data():
         bot.full_update_spreadsheet()
 
     bot.should_log = True
-    bot.manual_push = mp
     bot.debug = debug

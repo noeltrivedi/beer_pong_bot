@@ -1,8 +1,8 @@
 {
+    "debug" : false, //prints messages to console instead of actually sending them, etc
+    "use_spreadsheet" : true, //if true, make sure to save your service credentials as data/client_secret.json
+    "service_credentials" : "client_secret.json", //the name of the service credentials file from Google
+
     "bot_id" : "get this from GroupMe",
-    "debug" : true, //prints messages to console instead of actually sending them, etc
-    "manual_push" : false, //set to true if you do not want to automatically push updates to the spreadsheet
-    "use_spreadsheet" : true, //if true, you must supply google credentials
-    "google_credentials_filename" : "get this from the Google Developer Console",
-    "listening_port" : 2200 //port doesn't really matter but make sure it's the right one for your callback url
+    "listening_port" : 2200, //port doesn't really matter but make sure it's the right one for your callback url
 }

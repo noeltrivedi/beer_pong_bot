@@ -1,5 +1,9 @@
-import chomps
 import pygsheets
+import sys
+import logging
+
+spreadsheet_name = 'Beer Pong Club Stats'
+worksheet_name = 'Stats'
 
 name_col = 1
 win_percent_col = 2
@@ -15,27 +19,49 @@ beers_drank_col = 11
 game_participation_col = 12
 
 class SheetsDecorator():
-    def __init__(self, google_credentials_file):
-        self.init_pygsheets(google_credentials_file)
+    def __init__(self, load_spreadsheet, credentials):
+        self.credentials = credentials
+        self._init_pygsheets()
+        if load_spreadsheet:
+            self._load_spreadsheet()
+            self._init_name_map()
 
+    def _load_spreadsheet(self):
+        try:
+            self.spreadsheet = self.gc.open(spreadsheet_name)
+            self.stats_worksheet = self.spreadsheet.worksheet_by_title(worksheet_name)
+        except (pygsheets.SpreadsheetNotFound, pygsheets.WorksheetNotFound):
+            print('Spreadsheet was not properly intialized! Follow the instructions in README.md to initialize the spreadsheet')
+            logger = logging.getLogger('chomps')
+            logger.error('Spreadsheet was not initialized. Exiting...')
+            sys.exit()
+
+    def _init_name_map(self):
         self.name_to_row_map = {}
         for i, name in enumerate(self.stats_worksheet.get_col(1)):
             if name is not 'Name':
                 self.name_to_row_map[name] = i+1
 
-    def init_pygsheets(self, google_credentials_file):
-        gc = pygsheets.authorize(service_file=google_credentials_file)
-        self.spreadsheet = gc.open('Beer Pong Club Stats')
-        self.stats_worksheet = self.spreadsheet.worksheet_by_title('Stats')
+    def _init_pygsheets(self):
+        self.gc = pygsheets.authorize(service_file=self.credentials)
+
 
     def get_sheet_url(self):
         return 'https://docs.google.com/spreadsheets/d/' + self.spreadsheet.id
 
     def find_next_available_row(self):
+        min_row = 4
+
         col_values = self.stats_worksheet.get_col(1)
-        return len(col_values)+1
+        next_available = len(col_values)+1
+        next_available = next_available if next_available >=4 else min_row
+        return next_available
 
     def update_player_stats(self, player_name, player):
+        #This isn't great, but we can't import chomps at the full level since it attempts to import this file
+        #TODO: Probably a sign of bad design, so this should be fixed later
+        import chomps
+
         self.stats_worksheet
         row = self.name_to_row_map[player_name]
 
@@ -89,3 +115,19 @@ class SheetsDecorator():
 
         vals = [player_name, 0, 'N/A', 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.stats_worksheet.update_row(row, vals)
+
+    def init_spreadsheet(self, email=None):
+        #This is a identifier for a public spreadsheet with all the formulas and formatting preloaded
+        template_tuple = (u'1W9rPJcpZFNtAtiaMUZJzKbfDejTG9LLvO_pnRJcVwKg', 468279265)
+
+        sheets = self.gc.list_ssheets()
+        for sheet in sheets:
+            if sheet['name'] == spreadsheet_name:
+                print('Sheet already exists! Exiting...')
+                sys.exit()
+
+        self.spreadsheet = self.gc.create(title=spreadsheet_name)
+        self.stats_worksheet = self.spreadsheet.add_worksheet(title=worksheet_name, src_tuple=template_tuple)
+        self.spreadsheet.del_worksheet(self.spreadsheet.worksheet_by_title('Sheet1'))
+        if email is not None:
+            self.spreadsheet.share(email, role='writer')

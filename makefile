@@ -2,6 +2,9 @@ tests:
 	python -m unittest discover -s tests/
 
 startup-daemon:
-	nohup python -u run.py&
+	python -u run.py&
 
-.PHONY: tests startup-daemon
+setup:
+	python init_spreadsheet.py
+
+.PHONY: tests startup-daemon setup

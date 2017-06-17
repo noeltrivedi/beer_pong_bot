@@ -13,11 +13,12 @@ Chomps is a GroupMe bot written in Python which can log and track beer pong stat
 ## Getting Started
 
 1. Run the command `pip install -r requirements.txt` to install required dependencies
-2. [Get Google API Credentials](http://gspread.readthedocs.io/en/latest/oauth2.html) and rename the Service Credentials as `data/client_secret.json`
-3. Create a GroupMe bot and save its token and id. Set the callback url to the IP on which you plan to run the bot, with an arbitrary port
-4. Run `python init.py` in the root directory to create blank
-5. Finally, `python run.py` to listen to messages in the GroupMe.
-6. If you prefer to create a daemon instead, run `sh startup.sh` which will create a background python process which pipes output to `data/log.txt`
+2. [Create a GroupMe bot.](https://dev.groupme.com/bots/new) Set the callback url to the IP on which you plan to run the bot, with an arbitrary port.
+3. If you're planning on using the spreadsheet functionality, you'll need signed credentials from Google. I recommend following [the instructions for 'Signed Credentials' from pygsheets](http://pygsheets.readthedocs.io/en/latest/authorizing.html). Then rename your credentials to `client_secret.json` and place it in the `data/` folder. Next, run `make setup` and follow the prompts. I highly recommend adding an email address. After setting this up, add any formatting you'd like to the Stats sheet. A link to the spreadsheet should have been sent to your email.
+4. Setup the config file and save it as `data/config.json`. There's an example in the data folder.
+5. Run `make startup-daemon`to create a background process running the bot.
+6. Finally, register some players using `!register <name>` and start playing!
+
 
 ## Basic Usage
 Note: Whenever a name is required, any valid nickname will work.
@@ -83,6 +84,5 @@ In order of priority:
 
 * Write a script to set up a GroupMe bot
 * Write more unit tests
-* Write a script to initialize a Stats spreadsheet
 * Convert player stat into named tuple
 * Implement functionality to archive stats, and reset all data (new seasons)
