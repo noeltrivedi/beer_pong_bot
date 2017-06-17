@@ -5,6 +5,6 @@ startup-daemon:
 	python -u run.py&
 
 setup:
-	echo "Not yet implemented"
+	python init_spreadsheet.py
 
 .PHONY: tests startup-daemon setup

@@ -15,6 +15,8 @@ player_data_file = os.path.join('.', 'data', 'player_data.json')
 class Chomps():
     def __init__(self, bot_id, debug=False, use_spreadsheet=True, google_credentials_filename=None):
         self.logger = logging.getLogger('chomps')
+        if debug:
+            self._attach_debug_handler()
         self.bot_id = bot_id
         self.debug = debug
 
@@ -23,7 +25,7 @@ class Chomps():
 
         if use_spreadsheet:
             credentials_path = os.path.join('.', 'data', google_credentials_filename)
-            self.spread = SheetsDecorator(credentials_path)
+            self.spread = SheetsDecorator(load_spreadsheet=True, credentials=credentials_path)
         else:
             self.spread = None
 
@@ -35,6 +37,14 @@ class Chomps():
             fn.close()
 
         self.logger.info("Chomps initialized; bot_id=%s; debug=%s; use_spreadsheet=%s", bot_id, debug, use_spreadsheet)
+
+    def _attach_debug_handler(self):
+        ch = logging.StreamHandler()
+        ch.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        ch.setFormatter(formatter)
+        self.logger.addHandler(ch)
+
 
     def _init_regexes(self):
         #regex building blocks
@@ -430,13 +440,13 @@ class Chomps():
                 self.spread.update_player_stats(player, self.player_data[player])
             self.spread.update_game_participation(self.player_data)
 
-def initialize(bot_id=0, debug=False, use_spreadsheet=True):
+def initialize(bot_id=0, debug=False, use_spreadsheet=True, service_credentials=None):
     global bot
     bot = Chomps(
         bot_id=bot_id,
         debug=debug,
         use_spreadsheet=use_spreadsheet,
-        google_credentials_filename='client_secret.json'
+        google_credentials_filename=service_credentials
         )
     return bot
 

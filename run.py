@@ -18,6 +18,7 @@ chomps.initialize(
     bot_id=config['bot_id'],
     debug=config['debug'],
     use_spreadsheet=config['use_spreadsheet'],
+    service_credentials=config['service_credentials']
     )
 
 chomps.listen(port=config['listening_port']) #blocking call
