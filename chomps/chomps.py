@@ -246,8 +246,8 @@ class Chomps():
         gameCount = self.player_data[player_name]['games']
         cupCount = self.player_data[player_name]['cups']
         winCount = self.player_data[player_name]['wins']
-        was_carried_rate = self.player_data[player_name]['games_was_carried']/self.player_data[player_name]['wins']*100 if self.player_data[player_name]['wins'] is not 0 else 0
-        carry_rate = self.player_data[player_name]['games_carried']/self.player_data[player_name]['wins']*100 if self.player_data[player_name]['wins'] is not 0 else 0
+        was_carried_rate = self.player_data[player_name]['games_was_carried']/float(self.player_data[player_name]['wins'])*100 if self.player_data[player_name]['wins'] is not 0 else 0
+        carry_rate = self.player_data[player_name]['games_carried']/float(self.player_data[player_name]['wins'])*100 if self.player_data[player_name]['wins'] is not 0 else 0
         trollCount = self.player_data[player_name]['trolls']
         beerCount = self.player_data[player_name]['beers_drank']
         commonPartner = self.get_most_common_partner(player_name)
