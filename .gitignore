@@ -5,6 +5,10 @@ data/player_data.json
 data/config.json
 data/log.txt
 data/client_secret.json
+data/groupme_access_token.json
+
+# Ignore requests
+requests/create_request.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -105,3 +109,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Sublime Project file
+*.sublime-project
+*.sublime-workspace
