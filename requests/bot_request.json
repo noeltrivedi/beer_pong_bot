@@ -1,0 +1,8 @@
+{
+  "bot" : {
+    "name" : "Chomps",
+    "group_id" : "-1",
+    "callback_url": "http://noeltrivedi.com:",
+    "avatar_url": "http://alancoon.io/chomps.jpg" 
+  }
+}
