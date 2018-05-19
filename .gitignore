@@ -7,9 +7,6 @@ data/log.txt
 data/client_secret.json
 data/groupme_access_token.json
 
-# Ignore requests
-requests/create_request.json
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

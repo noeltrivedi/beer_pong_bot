@@ -2,7 +2,7 @@
   "bot" : {
     "name" : "Chomps",
     "group_id" : "-1",
-    "callback_url": "http://noeltrivedi.com:",
+    "callback_url": ":", // Enter your callback website with a colon, do not add port number.  Delete this comment when done.
     "avatar_url": "https://i.groupme.com/2533x2533.jpeg.f3668bffbc03412da7718d2d34426e05" 
   }
 }
