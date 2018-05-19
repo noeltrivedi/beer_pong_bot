@@ -16,7 +16,7 @@ def create_group_POST():
 	request_path = os.path.join('.', 'requests', 'create_request.json')
 	if not os.path.exists(request_path):
 		# Load default values.
-		payload = '{ "name": "Beer Pong", "description": "Let ball meet beer.", "share": true, "image_url": "http://alancoon.io/pong.jpg" }'
+		payload = '{ "name": "Beer Pong", "description": "Let ball meet beer.", "share": true, "image_url": "https://i.groupme.com/355x265.jpeg.45df9565ba15494caaffbe7fa899fe59" }'
 	else:
 		payload = open(request_path)
 
@@ -41,7 +41,7 @@ def create_bot_POST(group_id, port, callback_url=None):
 	request_path = os.path.join('.', 'requests', 'bot_request.json')
 	if not os.path.exists(request_path) or callback_url is not None or DEBUG:
 		# Load default values.
-		payload = '{ "bot": { "name": "Chomps", "group_id": "' + str(group_id) + '", "callback_url": "' + str(callback_url) + '", "image_url": "http://alancoon.io/chomps.jpg" } }'
+		payload = '{ "bot": { "name": "Chomps", "group_id": "' + str(group_id) + '", "callback_url": "' + str(callback_url) + '", "avatar_url": "https://i.groupme.com/2533x2533.jpeg.f3668bffbc03412da7718d2d34426e05" } }'
 	'''
 	else:
 		file = open(request_path)
