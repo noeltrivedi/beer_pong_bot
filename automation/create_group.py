@@ -64,7 +64,7 @@ def create_bot_POST(group_id, port, callback_url=None):
 
 	# Have Chomps send a welcome message to the group.
 	bot_id = str(converted_response['response']['bot']['bot_id'])
-	request = '{ "bot_id": "' + bot_id + '", "text": "Hello, my name is Chomps.  Let ball meet beer." }'
+	request = '{ "bot_id": "' + bot_id + '", "text": "Hello, my name is Chomps.  Let ball meet beer.  Type !help to see a list of commands and instructions on how to use Chomps." }'
 	url = "https://api.groupme.com/v3/bots/post"
 	response = requests.post(url, data=request, headers=headers)
 
