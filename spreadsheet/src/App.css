@@ -3,26 +3,38 @@
 }
 
 .App-logo {
+  /* 
+  Remove spinning animation: 
   animation: App-logo-spin infinite 20s linear;
+  */
   height: 80px;
 }
 
 .App-header {
-  background-color: #222;
-  height: 150px;
+  background-color: #777;
+  height: 175px;
   padding: 20px;
   color: white;
 }
 
 .App-title {
   font-size: 1.5em;
+  font-family: BrandonGrotesque_Med;
+}
+
+.App-subtitle {
+  font-size: 1.0em;
+  font-family: BrandonGrotesque_LightIt;
 }
 
 .App-intro {
   font-size: large;
 }
 
+/*
+Remove spinning animation from logo:
 @keyframes App-logo-spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+*/
