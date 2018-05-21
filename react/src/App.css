@@ -1,13 +1,11 @@
+@import url("CustomTabs.css");
+
 .App {
   text-align: center;
 }
 
 .App-logo {
-  /* 
-  Remove spinning animation: 
-  animation: App-logo-spin infinite 20s linear;
-  */
-  height: 80px;
+  height: 85px;
 }
 
 .App-header {
@@ -35,11 +33,14 @@
   font-family: "Helvetica Neue";
 }
 
-
-/*
-Remove spinning animation from logo:
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.App-tab {
+  background-color: #FFF;
 }
-*/
+
+.App-tab-title {
+  font-family: BrandonGrotesque_Med, "Helvetica Neue";
+}
+
+.App-tab-season-stats-key {
+  font-family: BrandonGrotesque_Light, "Helvetica Neue";
+}

@@ -1,13 +1,18 @@
+// Import components
 import React, { Component } from 'react';
-import ReactTable from "react-table";
+import ReactTable from 'react-table';
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 
 // Import .svg files:
 import chomps_logo from './chomps_logo.svg';
 
 // Import .css files:
+import 'react-table/react-table.css'
+import 'react-tabs/style/react-tabs.css';
 import './App.css';
 import './fonts.css';
-import 'react-table/react-table.css'
+
+
 
 
 class App extends Component {
@@ -15,12 +20,22 @@ class App extends Component {
   	var data = [
 	  	{
 	  		name: 'Alan Coon',
-	  		totalCups: 21,
-	  		winPct: 44.24,
+	  		totalCups: 38,
+	  		winPct: 44.44,
 	  		mostCommonPartner: {
 	  			name: 'Noel Trivedi',
 	  			totalCups: 22,
-	  		}
+	  		},
+        winsCarriedPct: 0.00,
+        winsWasCarriedPct: 0.00,
+        cupsPerGame: 4.22,
+        trolls: 0,
+        totalBeersDrank: 8.9,
+        totalGameCount: 9,
+        totalWinCount: 4,
+        gameParticipationPct: 34.62,
+
+
 
 	  	},
 	  	{
@@ -40,7 +55,17 @@ class App extends Component {
   	for (i = 0; i < numberOfPlayers; i++) {
   		var playerObject = {};
   		playerObject['name'] = 'Hello' + i;
-  		playerObject['mostCommonPartner'] = { name: 'None' };
+      playerObject['totalCups'] = 0;
+      playerObject['winPct'] = 0.00;
+      playerObject['mostCommonPartner'] = { name: 'None' };
+      playerObject['winsCarriedPct'] = 0.00;
+      playerObject['winsWasCarriedPct'] = 0.00;
+      playerObject['cupsPerGame'] = 0.00;
+      playerObject['trolls'] = 0;
+      playerObject['totalBeersDrank'] = 0;
+      playerObject['totalGameCount'] = 0;
+      playerObject['totalWinCount'] = 0;
+      playerObject['gameParticipationPct'] = 0.00;
   		data.push(playerObject);
   	}
 
@@ -84,7 +109,7 @@ class App extends Component {
   			width: 75 // Narrow stat, save space for other columns
   		},
   		{
-  			Header: 'Times Trolled',
+  			Header: 'Trolls',
   			accessor: 'trolls',
   			Cell: props => <span className='number'>{props.value}</span>
   		},
@@ -102,26 +127,54 @@ class App extends Component {
   			Header: 'Game Count',
   			accessor: 'totalGameCount',
   			Cell: props => <span className='number'>{props.value}</span>
-  		}
+  		},
+      {
+        Header: 'Game Participation',
+        accessor: 'gameParticipationPct',
+        Cell: props => <span className='number'>{props.value}%</span>,
+        width: 150
+      }
   	];
 
     return (
       <div className="App">
-    	<header className="App-header">
+      	<header className="App-header">
           <img src={chomps_logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">welcome to chomps.beer</h1>
-          <h4 className="App-subtitle">your beer pong statistics hub for the twenty-first century</h4>
-        </header>
+          <h1 className="App-title">Welcome to chomps.beer!</h1>
+          <h4 className="App-subtitle">Your beer pong statistics hub for the twenty-first century.</h4>
+        </header>   
         <div className="App-body">
-			<ReactTable
-				data={data}
-				columns={columns}
-				defaultPageSize={15}
-	          	noDataText="No data yet, y'all better get drinkin'!"
-				className="-striped -highlight"
-			/>
-        	<br />
-	    </div>
+          <Tabs>
+            <TabList>
+              <Tab>STATS</Tab>
+              <Tab>TEAMS</Tab>
+              <Tab>SEASON</Tab> 
+            </TabList>
+            <TabPanel>
+              <div className="App-tab">
+                <h2 className="App-tab-title">Statistics Spreadsheet</h2>
+          			<ReactTable
+          				data={data}
+          				columns={columns}
+          				defaultPageSize={15}
+          	          	noDataText="No data yet, y'all better get drinkin'!"
+          				className="-striped -highlight"
+          			/>
+              </div>
+            </TabPanel>
+            <TabPanel>
+              <h2 className="App-tab-title">Team Statistics</h2>
+              <h4 className="App-subtitle">Please select two players to see their team statistics.</h4>              
+            </TabPanel>
+            <TabPanel>
+              <h2 className="App-tab-title">Season Statistics</h2>
+              <h3 className="App-tab-season-stats-key">Total Games:</h3>
+              <h3 className="App-tab-season-stats-key">Total Beers Drank:</h3> 
+              <h3 className="App-tab-season-stats-key">Total Cups Made:</h3>
+              <h3 className="App-tab-season-stats-key">Total Trolls:</h3>
+            </TabPanel>
+          </Tabs>
+  	    </div>
       </div>
     );
 
