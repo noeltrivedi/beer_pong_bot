@@ -1,5 +1,5 @@
 .react-tabs__tab-list {
-  background-color: #777;
+  background-color: #0d6e76;
   margin: 0 0 10px;
   padding: 0;
 }
@@ -14,7 +14,8 @@
   cursor: pointer;
   background-color: #d8d8d8;
   border-radius: 10px 10px 0 0;
-  font-family: BrandonGrotesque_Med;
+  font-family: BrandonGrotesque_Med, "Helvetica Neue";
+  font-weight: bolder;
 
 }
 
@@ -24,12 +25,14 @@
   border-bottom: none;
   color: black;
   border-radius: 10px 10px 0 0;
-  font-family: BrandonGrotesque_Med;
+  font-family: BrandonGrotesque_Med, "Helvetica Neue";
+  font-weight: bolder;
 }
 
 .react-tabs__tab--disabled {
   background: #fff;
   border-color: #aaa;
   cursor: default;
-  font-family: BrandonGrotesque_Med;
+  font-family: BrandonGrotesque_Med, "Helvetica Neue";
+  font-weight: bolder;
 }

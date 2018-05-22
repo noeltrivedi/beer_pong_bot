@@ -1,28 +1,69 @@
 @import url("CustomTabs.css");
 
+body {
+  background-color: #0d6e76;
+}
+
 .App {
   text-align: center;
 }
 
 .App-logo {
   height: 85px;
+  color: white;
+  fill: currentColor;
 }
 
 .App-header {
-  background-color: #777;
-  height: 175px;
+  background-color: #0d6e76;
+  height: 190px;
   padding: 20px;
+  color: white;
+}
+
+.App-footer {
+  background-color: #0d6e76;
+  height: 40px;
+  padding: 20px;
+  margin-top: 20px;
+  color: white;
+  font-family: BrandonGrotesque_Light, "Helvetica Neue";
+  font-weight: lighter;
+}
+
+.App-footer-column > span > a {
+  color: white;
+}
+
+.App-footer-row {
+  display: flex;
+  width: 45%;
+  margin: 0 auto;
+}
+
+.App-footer-column {
+  width: 50%;
+  /*padding: 10px;*/
+  text-align: center;
+  margin: 0 auto;
+}
+
+.svg {
+  fill: white;
   color: white;
 }
 
 .App-title {
   font-size: 1.5em;
-  font-family: BrandonGrotesque_Med;
+  font-family: BrandonGrotesque_Med, "Helvetica Neue";
+  font-weight: bolder;
 }
 
 .App-subtitle {
   font-size: 1.0em;
-  font-family: BrandonGrotesque_LightIt;
+  font-family: BrandonGrotesque_LightIt, "Helvetica Neue";
+  font-style: italic;
+  font-weight: lighter;
 }
 
 .App-intro {
@@ -31,6 +72,7 @@
 
 .App-body {
   font-family: "Helvetica Neue";
+  background-color: #FFF;
 }
 
 .App-tab {
@@ -39,6 +81,21 @@
 
 .App-tab-title {
   font-family: BrandonGrotesque_Med, "Helvetica Neue";
+}
+
+.App-tab-team-stats-row {
+  display: flex;
+  width: 80%;
+  margin: 0 auto;
+
+}
+
+.App-tab-team-stats-column {
+  width: 50%;
+  margin: 10px;
+  text-align: center;
+  font-family: BrandonGrotesque_Light, "Helvetica Neue";
+
 }
 
 .App-tab-season-stats-key {
