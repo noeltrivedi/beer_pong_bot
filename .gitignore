@@ -16,6 +16,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+.idea/
 .Python
 build/
 develop-eggs/
@@ -28,6 +29,7 @@ lib64/
 parts/
 sdist/
 var/
+venv3/
 wheels/
 *.egg-info/
 .installed.cfg

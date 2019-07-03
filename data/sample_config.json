@@ -8,5 +8,6 @@
     "service_credentials" : "client_secret.json", //the name of the service credentials file from Google
 
     "bot_id" : "get this from GroupMe",
-    "listening_port" : 2200 //port doesn't really matter but make sure it's the right one for your callback url
+    "listening_port" : 2200, //port doesn't really matter but make sure it's the right one for your callback url
+    "email_address": "@gmail.com" // TODO put email
 }
