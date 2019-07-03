@@ -8,6 +8,7 @@ def _exception_handler(type, value, tb):
     logger.error('Exception %s: %s\n\t%s', type.__name__, value, traceback.format_tb(tb))
 
 def _init_logger():
+	print('Setting up logger...')
         logger = logging.getLogger('chomps')
         logger.setLevel(logging.INFO)
 

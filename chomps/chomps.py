@@ -5,12 +5,15 @@ import json
 import urllib2
 import httplib
 import logging
+import math
 
 from .sheetsdecorator import SheetsDecorator
 from .messagerouter import MessageRouter
 
 log_file_name = os.path.join('.', 'data', 'stat_log.txt')
 player_data_file = os.path.join('.', 'data', 'player_data.json')
+
+RETIRED_USERS = []
 
 class Chomps():
     def __init__(self, bot_id, debug=False, use_spreadsheet=True, google_credentials_filename=None):
@@ -35,7 +38,6 @@ class Chomps():
         if not os.path.exists(log_file_name):
             fn = open(log_file_name, "w")
             fn.close()
-
         self.logger.info("Chomps initialized; bot_id=%s; debug=%s; use_spreadsheet=%s", bot_id, debug, use_spreadsheet)
 
     def _attach_debug_handler(self):
@@ -213,7 +215,12 @@ class Chomps():
     def handle_team_stat_request(self, m):
         player_one = self.convert_nickname_to_name(m.group(1))
         player_two = self.convert_nickname_to_name(m.group(2))
-
+        if player_one not in self.player_data:
+            self.send_message("Unable to return stats. Player name \"{}\" not found in the nickname database".format(player_one))
+            return
+        if player_two not in self.player_data:
+            self.send_message("Unable to return stats. Player name \"{}\" not found in the nickname database".format(player_two))
+            return
         stats = self.player_data[player_one]['teammate_stats'][player_two]
         if stats['games'] is 0:
             self.send_message('{} and {} have never played together!'.format(player_one, player_two))
@@ -308,7 +315,10 @@ class Chomps():
                 self.send_message(self.success_message)
 
     def add_new_nickname(self, canonical_name, nickname):
-        self.player_data[canonical_name]['nicknames'].append(nickname)
+        if nickname.lower() == 'chomps' or nickname.lower() == 'roger':
+	    self.send_message('That nickname assignment is prohibited.')
+	    return
+	self.player_data[canonical_name]['nicknames'].append(nickname)
         self.nickname_map[nickname] = canonical_name
         self.persist_player_data()
         self.send_message('Successfully registered {} with the nickname {}'.format(canonical_name, nickname))
@@ -339,6 +349,10 @@ class Chomps():
                 self.logger.warning('Unable to log stats. Player name \"%s\" not found in nickname database', player[0])
                 self.send_message("Unable to log stats. Player name \"{}\" not found in nickname database".format(player[0]))
                 break
+            elif player[0].strip().lower() in RETIRED_USERS:
+                all_players_found = False
+                self.send_message("Unable to log stats. Player \"{}\" is retired.".format(player[0]))
+                break
         return all_players_found
 
     def update_beer_count(self):
@@ -356,12 +370,14 @@ class Chomps():
     def send_message(self, message):
         self.logger.info("Sending message; msg=\"%s\"", message)
         if not self.debug:
-            data = {"bot_id": self.bot_id, "text": str(message)}
-            req = urllib2.Request('https://api.groupme.com/v3/bots/post')
-            req.add_header('Content-Type', 'application/json')
+		for i in range(int(math.ceil(len(message)/1000))+1):
+			message_part = message[i*1000:(i+1)*1000]
+            		data = {"bot_id": self.bot_id, "text": str(message_part)}
+            		req = urllib2.Request('https://api.groupme.com/v3/bots/post')
+            		req.add_header('Content-Type', 'application/json')
 
-            response = urllib2.urlopen(req, json.dumps(data))
-            response.close()
+            		response = urllib2.urlopen(req, json.dumps(data))
+	            	response.close()
 
     def update_player_stats(self, player, teammate, cups_left, won):
         if won:
@@ -426,7 +442,7 @@ class Chomps():
         if nickname.strip().lower() in self.nickname_map:
             return self.nickname_map[nickname.strip().lower()]
         else:
-            return nickname.strip()
+	    return nickname.strip().lower()
 
     def update_spreadsheet(self):
         if self.spread is not None:
@@ -471,3 +487,4 @@ def reload_data():
 
     bot.should_log = True
     bot.debug = debug
+    bot.persist_player_data()

@@ -9,3 +9,6 @@ class MessageRouter(BaseHTTPRequestHandler):
         data = json.loads(post_body)
 
         chomps.bot.receive_message(data['text'])
+
+    def do_GET(self):
+        pass
