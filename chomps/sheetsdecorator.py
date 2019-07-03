@@ -1,4 +1,5 @@
 import pygsheets
+import time
 import sys
 import logging
 
@@ -45,7 +46,6 @@ class SheetsDecorator():
     def _init_pygsheets(self):
         self.gc = pygsheets.authorize(service_file=self.credentials)
 
-
     def get_sheet_url(self):
         return 'https://docs.google.com/spreadsheets/d/' + self.spreadsheet.id
 
@@ -88,7 +88,11 @@ class SheetsDecorator():
             player['trolls'],
             player['beers_drank']
             ]
-        self.stats_worksheet.update_row(row, vals, 1)
+	try:
+            self.stats_worksheet.update_row(row, vals, 1)
+	except:
+            time.sleep(5)
+            return self.update_player_stats(player_name, player)
 
     def update_game_participation(self, player_data):
         total_games = 0
