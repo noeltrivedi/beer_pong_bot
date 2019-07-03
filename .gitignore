@@ -5,6 +5,7 @@ data/player_data.json
 data/config.json
 data/log.txt
 data/client_secret.json
+data/groupme_access_token.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -15,6 +16,7 @@ __pycache__/
 *.so
 
 # Distribution / packaging
+.idea/
 .Python
 build/
 develop-eggs/
@@ -27,6 +29,7 @@ lib64/
 parts/
 sdist/
 var/
+venv3/
 wheels/
 *.egg-info/
 .installed.cfg
@@ -105,3 +108,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Sublime Project file
+*.sublime-project
+*.sublime-workspace

@@ -198,6 +198,8 @@ class Chomps():
         if canonical_name not in self.player_data:
             self.send_message('Name {} was not found!'.format(canonical_name))
             return
+        elif nickname == 'roger' and canonical_name == 'whiskerino':
+            self.send_message('Player Whiskerino prohibited from having nickname: Roger')
         elif nickname in self.nickname_map:
             self.send_message('Player {} already has {} as a nickname!'.format(self.nickname_map[nickname], nickname))
         else:
