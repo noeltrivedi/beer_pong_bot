@@ -1,6 +1,6 @@
 import json
 import os
-from flask import Flask, render_template, jsonify
+from flask import Flask, send_from_directory, jsonify
 from chomps.chomps import initialize
 from chomps.sheetsdecorator import SheetsDecorator
 
@@ -40,21 +40,48 @@ class WebChomps(object):
         host = '0.0.0.0'
         port = 5000
         self.app.logger.info('Starting on {host}:{port}.'.format(host=host, port=port))
-        self.app.run(host=host, port=port, debug=self.debug)
-
+        self.app.run(host=host, port=port, debug=self.debug, use_reloader=True, threaded=True)
 
 web_chomps = WebChomps()
 
 
-@web_chomps.app.route('/')
-def hello_world():
-    context = web_chomps.chomps_instance  # GET STATS HERE AS DICT
-    return render_template(template_name_or_list='spread.html', context=context)
+@web_chomps.app.route('/', defaults={'path': ''})
+@web_chomps.app.route('/<path:path>')
+def serve(path):
+    # Serve React App
+    if path != "" and os.path.exists(web_chomps.app.static_folder + path):
+        return send_from_directory(web_chomps.app.static_folder, path)
+    else:
+        return send_from_directory(web_chomps.app.static_folder, 'index.html')
 
 
-@web_chomps.app.route('/', methods=['GET', 'POST'])
+@web_chomps.app.route('/api/table', methods=['GET', 'POST'])
 def api_table():
-
     response = jsonify({})
     response.status_code = 200
     return response
+
+
+@web_chomps.app.route('/api/players', methods=['POST'])
+def api_players():
+    response = jsonify({})
+    response.status_code = 200
+    return response
+
+
+@web_chomps.app.route('/api/seasons', methods=['POST'])
+def api_seasons():
+    response = jsonify({})
+    response.status_code = 200
+    return response
+
+
+@web_chomps.app.route('/api/teams', methods=['POST'])
+def api_teams():
+    response = jsonify({})
+    response.status_code = 200
+    return response
+
+
+if __name__ == '__main__':
+    web_chomps.main()
