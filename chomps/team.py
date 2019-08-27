@@ -1,5 +1,5 @@
-from stats import Stats
-from constants import BEERS_PER_CUP, MIN_CARRY_DIFFERENCE
+from .stats import Stats
+from .constants import BEERS_PER_CUP, MIN_CARRY_DIFFERENCE
 
 class InvalidGameException(Exception):
     pass
@@ -95,8 +95,8 @@ class TeamCollection():
         return newTeam
 
 if __name__ == '__main__':
-    from player import PlayerCollection
-    from records import GameRecord
+    from .player import PlayerCollection
+    from .records import GameRecord
     import string
     import random
 

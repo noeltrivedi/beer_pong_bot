@@ -19,7 +19,7 @@ trolls_col = 10
 beers_drank_col = 11
 game_participation_col = 12
 
-class SheetsDecorator():
+class SheetsDecorator(object):
     def __init__(self, load_spreadsheet, credentials):
         self.credentials = credentials
         self._init_pygsheets()
@@ -60,7 +60,7 @@ class SheetsDecorator():
     def update_player_stats(self, player_name, player):
         #This isn't great, but we can't import chomps at the full level since it attempts to import this file
         #TODO: Probably a sign of bad design, so this should be fixed later
-        import chomps
+        from . import chomps
 
         self.stats_worksheet
         row = self.name_to_row_map[player_name]
@@ -88,9 +88,9 @@ class SheetsDecorator():
             player['trolls'],
             player['beers_drank']
             ]
-	try:
+        try:
             self.stats_worksheet.update_row(row, vals, 1)
-	except:
+        except Exception:
             time.sleep(5)
             return self.update_player_stats(player_name, player)
 
@@ -121,17 +121,18 @@ class SheetsDecorator():
         self.stats_worksheet.update_row(row, vals)
 
     def init_spreadsheet(self, email=None):
+        pass
         #This is a identifier for a public spreadsheet with all the formulas and formatting preloaded
-        template_tuple = (u'1W9rPJcpZFNtAtiaMUZJzKbfDejTG9LLvO_pnRJcVwKg', 468279265)
-
-        sheets = self.gc.list_ssheets()
-        for sheet in sheets:
-            if sheet['name'] == spreadsheet_name:
-                print('Sheet already exists! Exiting...')
-                sys.exit()
-
-        self.spreadsheet = self.gc.create(title=spreadsheet_name)
-        self.stats_worksheet = self.spreadsheet.add_worksheet(title=worksheet_name, src_tuple=template_tuple)
-        self.spreadsheet.del_worksheet(self.spreadsheet.worksheet_by_title('Sheet1'))
-        if email is not None:
-            self.spreadsheet.share(email, role='writer')
+        # template_tuple = ('1W9rPJcpZFNtAtiaMUZJzKbfDejTG9LLvO_pnRJcVwKg', 468279265)
+        #
+        # sheets = self.gc.list_ssheets()
+        # for sheet in sheets:
+        #     if sheet['name'] == spreadsheet_name:
+        #         print('Sheet already exists! Exiting...')
+        #         sys.exit()
+        #
+        # self.spreadsheet = self.gc.create(title=spreadsheet_name)
+        # self.stats_worksheet = self.spreadsheet.add_worksheet(title=worksheet_name, src_tuple=template_tuple)
+        # self.spreadsheet.del_worksheet(self.spreadsheet.worksheet_by_title('Sheet1'))
+        # if email is not None:
+        #     self.spreadsheet.share(email, role='writer')

@@ -1,5 +1,5 @@
-from stats import Stats
-from constants import BEERS_PER_CUP, MIN_CARRY_DIFFERENCE
+from .stats import Stats
+from .constants import BEERS_PER_CUP, MIN_CARRY_DIFFERENCE
 
 class GameRecord():
     def __init__(self):
@@ -20,9 +20,9 @@ class GameRecord():
         losers = GameRecord.ConstructPlayerRecords(list(losingTeamStats.items()), losingTeamBeersPerPlayer, didWin=False)
 
         record = GameRecord()
-        for playerName, playerRecord in winners.items():
+        for playerName, playerRecord in list(winners.items()):
             record.AddPlayerRecord(playerName, playerRecord)
-        for playerName, playerRecord in losers.items():
+        for playerName, playerRecord in list(losers.items()):
             record.AddPlayerRecord(playerName, playerRecord)
         return record
 
@@ -65,8 +65,8 @@ class GameRecord():
 
     def __str__(self):
         # TODO(ntr) figure out a non-shitty way to do this
-        winners = [(name, record) for name, record in self._players.items() if record[Stats.DidWin] == True]
-        losers = [(name, record) for name, record in self._players.items() if record[Stats.DidWin] == False]
+        winners = [(name, record) for name, record in list(self._players.items()) if record[Stats.DidWin] == True]
+        losers = [(name, record) for name, record in list(self._players.items()) if record[Stats.DidWin] == False]
 
         recordString = ' '.join(['{} ({})'.format(name, record[Stats.CupsMade]) for (name, record) in winners])
         recordString += ' beat '

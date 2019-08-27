@@ -1,5 +1,5 @@
 from enum import Enum
-from constants import BEERS_PER_CUP, MIN_CARRY_DIFFERENCE
+from .constants import BEERS_PER_CUP, MIN_CARRY_DIFFERENCE
 
 class Stats(Enum):
     GamesPlayed = 0
@@ -58,7 +58,7 @@ class PlayerStats():
     def _getMostCommonPartner(self):
         mostGames = 0
         mostCommonPartner = 'None'
-        for teammate, stats in self._stats.items():
+        for teammate, stats in list(self._stats.items()):
            if stats[Stats.GamesPlayed] > mostGames:
                 mostGames = stats[Stats.GamesPlayed]
                 mostCommonPartner = teammate
@@ -66,7 +66,7 @@ class PlayerStats():
 
     def _getCumulativeStatValue(self, key):
         sum = 0
-        for stats in self._stats.values():
+        for stats in list(self._stats.values()):
             sum += stats[key]
         return sum
 

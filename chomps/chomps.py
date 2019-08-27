@@ -1,9 +1,10 @@
-from BaseHTTPServer import HTTPServer
+from http.server import HTTPServer
 import re
 import os.path
 import json
-import urllib2
-import httplib
+import urllib.request
+import urllib.error
+import urllib.parse
 import logging
 import math
 
@@ -12,12 +13,14 @@ from .messagerouter import MessageRouter
 
 log_file_name = os.path.join('.', 'data', 'stat_log.txt')
 player_data_file = os.path.join('.', 'data', 'player_data.json')
+logger = logging.getLogger(__name__)
 
 RETIRED_USERS = []
 
+
 class Chomps():
     def __init__(self, bot_id, debug=False, use_spreadsheet=True, google_credentials_filename=None):
-        self.logger = logging.getLogger('chomps')
+        self.logger = logger
         if debug:
             self._attach_debug_handler()
         self.bot_id = bot_id
@@ -90,8 +93,8 @@ class Chomps():
                     for nn in self.player_data[name]['nicknames']:
                         self.nickname_map[nn] = name
         else:
-            #create the player data file as an empty dict
-            #when players are registered, they'll get added normally
+            # Create the player data file as an empty dict
+            # When players are registered, they'll get added normally
             self.player_data = {}
             self.persist_player_data()
 
@@ -318,9 +321,10 @@ class Chomps():
 
     def add_new_nickname(self, canonical_name, nickname):
         if nickname.lower() == 'chomps' or nickname.lower() == 'roger':
-	    self.send_message('That nickname assignment is prohibited.')
-	    return
-	self.player_data[canonical_name]['nicknames'].append(nickname)
+            self.send_message('That nickname assignment is prohibited.')
+            return
+
+        self.player_data[canonical_name]['nicknames'].append(nickname)
         self.nickname_map[nickname] = canonical_name
         self.persist_player_data()
         self.send_message('Successfully registered {} with the nickname {}'.format(canonical_name, nickname))
@@ -361,7 +365,7 @@ class Chomps():
         losing_team_cups = int(self.player_stats[2][1]) + int(self.player_stats[3][1])
 
         for i in range(4):
-            beers_drank= 0
+            beers_drank = 0
             if i < 2:
                 beers_drank = float(losing_team_cups)/10
             else:
@@ -372,14 +376,14 @@ class Chomps():
     def send_message(self, message):
         self.logger.info("Sending message; msg=\"%s\"", message)
         if not self.debug:
-		for i in range(int(math.ceil(len(message)/1000))+1):
-			message_part = message[i*1000:(i+1)*1000]
-            		data = {"bot_id": self.bot_id, "text": str(message_part)}
-            		req = urllib2.Request('https://api.groupme.com/v3/bots/post')
-            		req.add_header('Content-Type', 'application/json')
+            for i in range(int(math.ceil(len(message)/1000))+1):
+                message_part = message[i*1000:(i+1)*1000]
+                data = {"bot_id": self.bot_id, "text": str(message_part)}
+                req = urllib.request.Request('https://api.groupme.com/v3/bots/post')
+                req.add_header('Content-Type', 'application/json')
 
-            		response = urllib2.urlopen(req, json.dumps(data))
-	            	response.close()
+                response = urllib.request.urlopen(req, json.dumps(data))
+                response.close()
 
     def update_player_stats(self, player, teammate, cups_left, won):
         if won:
@@ -444,7 +448,8 @@ class Chomps():
         if nickname.strip().lower() in self.nickname_map:
             return self.nickname_map[nickname.strip().lower()]
         else:
-	    return nickname.strip().lower()
+	        return nickname.strip().lower()
+
 
     def update_spreadsheet(self):
         if self.spread is not None:
@@ -458,6 +463,14 @@ class Chomps():
                 self.spread.update_player_stats(player, self.player_data[player])
             self.spread.update_game_participation(self.player_data)
 
+
+    def listen(self, server_class=HTTPServer, handler_class=MessageRouter, port=80):
+        server_address = ('', port)
+        httpd = server_class(server_address, handler_class)
+        logger.info('Listening for messages on port %d...', port)
+        httpd.serve_forever()
+
+
 def initialize(bot_id=0, debug=False, use_spreadsheet=True, service_credentials=None):
     global bot
     bot = Chomps(
@@ -468,11 +481,6 @@ def initialize(bot_id=0, debug=False, use_spreadsheet=True, service_credentials=
         )
     return bot
 
-def listen(server_class=HTTPServer, handler_class=MessageRouter, port=80):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    logging.getLogger('chomps').info('Listening for messages on port %d...', port)
-    httpd.serve_forever()
 
 def reload_data():
     bot.should_log = False

@@ -1,8 +1,11 @@
 import json
+import threading
+import logging
 import os
 from flask import Flask, send_from_directory, jsonify
 from chomps.chomps import initialize
 from chomps.sheetsdecorator import SheetsDecorator
+
 
 
 class WebChomps(object):
@@ -24,9 +27,13 @@ class WebChomps(object):
         self.chomps_instance = initialize(bot_id=self.bot_id, debug=self.debug, use_spreadsheet=self.use_spreadsheet,
                                           service_credentials=self.service_credentials)
         self.chomps_instance.listen(port=self.listening_port)  # Blocking call
+        threading.Thread(target=self.start_server)
+
+    def start_server(self):
+        self.chomps_instance.listen(port=self.config['listening_port'])  # blocking call
 
     def init_spreadsheet(self):
-        self.app.logger.info('Preparing to initialize stats spreadsheet')
+        logger.info('Preparing to initialize stats spreadsheet')
         spread = None
         if os.path.exists(self.credentials_path):
             spread = SheetsDecorator(load_spreadsheet=False, credentials=self.credentials_path)
@@ -36,11 +43,6 @@ class WebChomps(object):
             self.app.logger.error('Credentials file not found in path {}'.format(self.credentials_path))
         return spread
 
-    def main(self):
-        host = '0.0.0.0'
-        port = 5000
-        self.app.logger.info('Starting on {host}:{port}.'.format(host=host, port=port))
-        self.app.run(host=host, port=port, debug=self.debug, use_reloader=True, threaded=True)
 
 web_chomps = WebChomps()
 
@@ -57,6 +59,7 @@ def serve(path):
 
 @web_chomps.app.route('/api/table', methods=['GET', 'POST'])
 def api_table():
+    context = web_chomps.chomps_instance.nickname_map  # GET STATS HERE AS DICT
     response = jsonify({})
     response.status_code = 200
     return response
@@ -64,6 +67,7 @@ def api_table():
 
 @web_chomps.app.route('/api/players', methods=['POST'])
 def api_players():
+    context = web_chomps.chomps_instance.nickname_map  # GET STATS HERE AS DICT
     response = jsonify({})
     response.status_code = 200
     return response
@@ -71,6 +75,7 @@ def api_players():
 
 @web_chomps.app.route('/api/seasons', methods=['POST'])
 def api_seasons():
+    context = web_chomps.chomps_instance.nickname_map  # GET STATS HERE AS DICT
     response = jsonify({})
     response.status_code = 200
     return response
@@ -78,10 +83,17 @@ def api_seasons():
 
 @web_chomps.app.route('/api/teams', methods=['POST'])
 def api_teams():
+    context = web_chomps.chomps_instance.nickname_map  # GET STATS HERE AS DICT
     response = jsonify({})
     response.status_code = 200
     return response
 
 
 if __name__ == '__main__':
-    web_chomps.main()
+    logging_format = '%(asctime)s %(name)s [%(filename)s:%(lineno)d][%(process)d] [%(levelname)s] %(message)s'
+    debug = bool(web_chomps.config['debug'])
+    port = int(web_chomps.config['web_port'])
+    host = '0.0.0.0'
+    logging.basicConfig(level=logging.DEBUG if debug else logging.INFO, format=logging_format)
+    logger.info('Starting server on {host}:{port}. Debug: {debug}.'.format(host=host, port=port, debug=debug))
+    web_chomps.app.run(host=host, port=port, debug=debug, threaded=True)

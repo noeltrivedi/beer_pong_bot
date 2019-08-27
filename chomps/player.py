@@ -1,4 +1,4 @@
-from stats import Stats, PlayerStats
+from .stats import Stats, PlayerStats
 
 class PlayerAlreadyExistsException(Exception):
     pass
