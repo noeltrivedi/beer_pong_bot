@@ -1,7 +1,6 @@
 import React, {Component} from "react";
 import axios from "axios";
 import ReactTable from "react-table";
-import { StickyTable, Row, Col } from "react-sticky-table";
 import "../react-sticky-table.css";
 
 export default class TableView extends Component {

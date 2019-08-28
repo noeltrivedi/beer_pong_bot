@@ -1,5 +1,4 @@
 import React, {Component} from "react";
-import { TabPanel } from "react-tabs";
 
 export default class SeasonView extends Component {
 
