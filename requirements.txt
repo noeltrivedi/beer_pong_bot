@@ -3,6 +3,7 @@ certifi==2019.6.16
 chardet==3.0.4
 Click==7.0
 Flask==1.0.3
+Flask-Cors==3.0.8
 google-api-python-client==1.7.9
 google-auth==1.6.3
 google-auth-httplib2==0.0.3

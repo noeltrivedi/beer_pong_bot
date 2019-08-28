@@ -4,6 +4,10 @@ body {
   background-color: #0d6e76;
 }
 
+#root {
+  background-color: #0d6e76;
+}
+
 .App {
   text-align: center;
 }
@@ -23,9 +27,10 @@ body {
 
 .App-footer {
   background-color: #0d6e76;
-  height: 40px;
+  height: 80px;
   padding: 20px;
   margin-top: 20px;
+  margin-bottom: 0px;
   color: white;
   font-family: BrandonGrotesque_Light, "Helvetica Neue";
   font-weight: lighter;
@@ -36,14 +41,9 @@ body {
 }
 
 .App-footer-row {
-  display: flex;
-  width: 45%;
-  margin: 0 auto;
 }
 
 .App-footer-column {
-  width: 50%;
-  /*padding: 10px;*/
   text-align: center;
   margin: 0 auto;
 }
@@ -100,4 +100,17 @@ body {
 
 .App-tab-season-stats-key {
   font-family: BrandonGrotesque_Light, "Helvetica Neue";
+}
+
+.teams-view-row {
+  padding: 10px;
+  text-align: center;
+  font-family: BrandonGrotesque_Light, "Helvetica Neue";
+}
+
+.teams-view-col {
+  padding: 5px;
+  text-align: center;
+  font-family: BrandonGrotesque_Light, "Helvetica Neue";
+
 }

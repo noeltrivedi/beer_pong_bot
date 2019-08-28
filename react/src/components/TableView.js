@@ -1,76 +1,82 @@
 import React, {Component} from "react";
+import axios from "axios";
 import ReactTable from "react-table";
-
-
+import { StickyTable, Row, Col } from "react-sticky-table";
+import "../react-sticky-table.css";
 
 export default class TableView extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            playerData: {}
+        };
+        this.loadPlayerData();
     }
-      populatePlayerArray(names) {
+
+    loadPlayerData = () => {
+        let body = {};
+        axios
+            .post("/api/table", body)
+            .then(res => {
+                console.log("Player Data:", res.data);
+                this.setState({ playerData: res.data });
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    };
+
+    cleanTableValue = (value, significantFigures) => {
+        if (isNaN(value)) {
+            return 0;
+        } else if (value % 1 > 0) {
+            return value.toFixed(significantFigures);
+        } else return value;
+    }
+
+    populatePlayerArray() {
         let data = [];
-        for (let i = 0; i < names.length; i++) {
-          let playerObject = {};
-          playerObject["name"] = names[i];
-          playerObject["totalCups"] = Math.random() * 150;
-          playerObject["winPct"] = Math.random() * 100;
-          let temp = Math.round(Math.random() * 100);
-          playerObject["mostCommonPartner"] = names[temp % names.length];
-          playerObject["winsCarriedPct"] = Math.random() * 100;
-          playerObject["winsWasCarriedPct"] = Math.random() * 100;
-          playerObject["cupsPerGame"] = Math.random() * 10;
-          playerObject["trolls"] = Math.round(Math.random() * 10) % 3;
-          playerObject["totalBeersDrank"] = Math.random() * 100;
-          playerObject["totalGameCount"] = Math.round(Math.random() * 100);
-          playerObject["totalWinCount"] = Math.round(Math.random() * 100);
-          playerObject["gameParticipationPct"] = Math.random() * 100;
-          data.push(playerObject);
+        for (let playerName in this.state.playerData) {
+            let playerData = this.state.playerData[playerName];
+            let playerObject = {};
+            playerObject["name"] = playerName;
+            playerObject["totalCups"] = playerData["cups"];
+            playerObject["winPct"] = this.cleanTableValue(playerData["wins"] / playerData["games"] * 100, 3);
+            playerObject["mostCommonPartner"] = playerData["mcp"];
+            playerObject["winsCarriedPct"] = this.cleanTableValue(playerData["carryRate"], 3);
+            playerObject["winsWasCarriedPct"] = this.cleanTableValue(playerData["carriedRate"], 3);
+            playerObject["cupsPerGame"] = this.cleanTableValue(playerData["cups"] / playerData["games"], 3);
+            playerObject["trolls"] = playerData["trolls"];
+            playerObject["totalBeersDrank"] = this.cleanTableValue(playerData["beers"], 1);
+            playerObject["totalGameCount"] = playerData["games"];
+            playerObject["totalWinCount"] = playerData["wins"];
+            if (this.props.season) {
+                let totalGames = this.props.season.games;
+                playerObject["gameParticipationPct"] = this.cleanTableValue(playerData["games"] / totalGames * 100, 3);
+            } else {
+                playerObject["gameParticipationPct"] = "...";
+            }
+            data.push(playerObject);
         }
         return data;
-      }
+    }
 
     render() {
-            let names = [
-          'Alan Coon',
-          'Noel Trivedi',
-          'Jacob Karson',
-          'Michael Spielberg',
-          'Landon Fadel',
-          'Joshua Pollard',
-          'Mario Blanco',
-          'Danyal Brink',
-          'Ben Kraus',
-          'Baylee Jones',
-          'Pledge Jerry Hernandez',
-          'Julian Garcia',
-          'Aaron Licon',
-          'Mario Portillo',
-          'Chris Cain',
-          'Dennis Naroditskiy',
-          'Niraj Mehta',
-          'Andrew Heerman',
-          'Jonathan Santana',
-          'Zachary Anziano',
-          'Ali Espinoza',
-          'Sam Hanoura',
-        ];
-
-          let data = this.populatePlayerArray(names);
+        let data = this.populatePlayerArray();
 
 
-            const columns = [
+        const columns = [
             {
                 Header: 'Name',
                 accessor: 'name', // String-based value accessor
                 Cell: props => <span className='string'><a href="">{props.value}</a></span>, // Link to player profile
-              // width: {nameColumnWidth}
+                // width: {nameColumnWidth}
             },
             {
                 Header: 'Total Cups',
                 accessor: 'totalCups',
-                Cell: props => <span className='number'>{props.value}</span>
+                Cell: props => <span className='number'>{props.value}</span>,
             },
             {
                 Header: 'Win', // Win Percentage
@@ -78,16 +84,11 @@ export default class TableView extends Component {
                 Cell: props => <span className='number'>{props.value}%</span> // Only want two decimal places, can be done on backend?
             },
             {
-            /*
-             * Changed mostCommonPartner to a string of the most common partner's name rather than an object.
-             * Figured it's easier to do all of the calculation on the backend.
-             */
-                // id: 'mostCommonPartner', // Required because accessor is not a string
                 Header: 'MCP', // Most Common Partner
-                // accessor: d => d.mostCommonPartner.name, // Custom value accessor
-            accessor: 'mostCommonPartner',
-                Cell: props => <span className='string'><a href="">{props.value}</a></span>, // Link to most common partner profile
-              // width: {nameColumnWidth}
+                accessor: 'mostCommonPartner',
+                // Cell: props => <span className='string'><a href="">{props.value}</a></span>, // Link to most common partner profile
+                Cell: props => <span className='string'>{props.value}</span>, // No link for now
+                // width: {nameColumnWidth}
             },
             {
                 Header: 'Carried', // Wins Carried Percentage
@@ -120,33 +121,38 @@ export default class TableView extends Component {
                 Header: 'Win Count',
                 accessor: 'totalWinCount',
                 Cell: props => <span className='number'>{props.value}</span>,
-            // width: {totalWinCountColumnWidth}
+                // width: {totalWinCountColumnWidth}
             },
             {
                 Header: 'Game Count',
                 accessor: 'totalGameCount',
                 Cell: props => <span className='number'>{props.value}</span>
             },
-          {
-            Header: 'Participation',
-            accessor: 'gameParticipationPct',
-            Cell: props => <span className='number'>{props.value}%</span>,
-            // width: {participationColumnWidth}
-          }
+            {
+                Header: 'Participation',
+                accessor: 'gameParticipationPct',
+                Cell: props => <span className='number'>{props.value}%</span>,
+                // width: {participationColumnWidth}
+            }
         ];
 
         return (
-          <div className="App-tab">
-            <h2 className="App-tab-title">Statistics Spreadsheet</h2>
-            <h4 className="App-subtitle">Click on a column header to sort.</h4>
+            <div className="App-tab">
+                <h2 className="App-tab-title">Statistics Spreadsheet</h2>
+                <h4 className="App-subtitle">Click on a column header to sort.</h4>
                 <ReactTable
+                    // stickyColumnCount={0}
                     data={data}
                     columns={columns}
-                    defaultPageSize={15}
-                noDataText="No data yet, y'all better get drinkin'!"
+                    defaultPageSize={20}
+                    defaultSorted={[{
+                            id: "totalCups",
+                            desc: true
+                    }]}
+                    noDataText="No data yet. Go play some pong, pledge."
                     className="-striped -highlight"
                 />
-          </div>
+            </div>
         );
 
     }

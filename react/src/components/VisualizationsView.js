@@ -9,8 +9,9 @@ export default class VisualizationsView extends Component {
     render() {
         return (
             <div>
-                  <h2 className="App-tab-title">Visualizations</h2>
-                <h4 className="App-subtitle">Feature coming soon, or not, I don't know dude.</h4>
+                <h2 className="App-tab-title">Visualizations</h2>
+                <h4 className="App-subtitle">I'm going to make this when I feel like it.</h4>
+                <br/>
             </div>
 
         );

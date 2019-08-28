@@ -9,11 +9,11 @@ export default class ChompsFooter extends Component {
     render() {
         return (
             <footer className="App-footer">
-              <div className="App-footer-row">
-                <div className="App-footer-column">
+              <div className="App-footer-row row">
+                <div className="App-footer-column col-sm-5">
                   <span><a href="https://github.com/noeltrivedi">@noeltrivedi</a></span>
                 </div>
-                <div className="App-footer-column">
+                <div className="App-footer-column col-sm-5">
                   <span><a href="https://github.com/alancoon">@alancoon</a></span>
                 </div>
               </div>

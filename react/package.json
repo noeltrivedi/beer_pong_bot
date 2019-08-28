@@ -2,17 +2,22 @@
   "name": "spreadsheet",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://localhost:5000/",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.21",
     "@fortawesome/free-solid-svg-icons": "^5.10.1",
     "@fortawesome/react-fontawesome": "^0.1.4",
+    "axios": "^0.19.0",
+    "bootstrap": "^4.3.1",
     "react": "^16.3.2",
     "react-dom": "^16.3.2",
     "react-scripts": "1.1.4",
     "react-select": "^1.2.1",
+    "react-sticky-table": "^4.0.0",
     "react-strap": "^0.0.1",
     "react-table": "^6.10.0",
-    "react-tabs": "^2.2.2"
+    "react-tabs": "^2.2.2",
+    "reactstrap": "^8.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
