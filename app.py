@@ -2,39 +2,30 @@ import json
 import threading
 import logging
 import os
+import variables
 from flask import Flask, jsonify, send_from_directory, request
 from flask_cors import CORS
 from chomps.chomps import initialize
 from chomps.sheetsdecorator import SheetsDecorator
 
-# Accepted CORS origins
-ACCEPTED_ORIGINS = [
-    r'(https?:\/\/)?(localhost|127\.0\.0\.1)(:\d+)?',
-    r'(https?:\/\/)?(.+)?\.heroku\.com(.+)?',
-]
 
 class WebChomps(object):
     def __init__(self):
-        self.credentials_path = os.path.join('.', 'data', 'client_secret_debug.json')
-        self.config_file = os.path.join('.', 'data', 'config.json')
+        self.credentials_path = os.path.join('.', 'data', 'client_secret.json')
         assert os.path.exists(self.credentials_path)
-        assert os.path.exists(self.config_file)
-        with open(self.config_file) as data_file:
-            config = json.load(data_file)
-        self.bot_id = config['bot_id']
-        self.debug = config['debug']
-        self.web_port = config['web_port']
-        self.use_spreadsheet = config['use_spreadsheet']
-        self.service_credentials = config['service_credentials']
-        self.email_address = config['email_address']
-        self.listening_port = config['listening_port']
+        self.bot_id = variables.BOT_ID
+        self.debug = variables.DEBUG
+        self.web_port = variables.WEB_PORT
+        self.use_spreadsheet = variables.USE_SPREADSHEET
+        self.service_credentials = variables.SERVICE_CREDENTIALS
+        self.email_address = variables.EMAIL_ADDRESS
+        self.listening_port = variables.LISTENING_PORT
         self.app = Flask(__name__, static_folder='react/build')
         self.app.url_map.strict_slashes = False
 
         self.spreadsheet = self.init_spreadsheet()
         self.chomps_instance = initialize(bot_id=self.bot_id, debug=self.debug, use_spreadsheet=self.use_spreadsheet,
                                           service_credentials=self.service_credentials)
-        # self.chomps_instance.listen(port=self.listening_port)  # Blocking call
         threading.Thread(target=self.start_server)
 
     def start_server(self):
@@ -53,7 +44,7 @@ class WebChomps(object):
 
 
 web_chomps = WebChomps()
-cors = CORS(web_chomps.app, resources={r'/api/*': {'origins': ACCEPTED_ORIGINS}}, supports_credentials=True)
+cors = CORS(web_chomps.app, resources={r'/api/*': {'origins': variables.ACCEPTED_ORIGINS}}, supports_credentials=True)
 
 
 @web_chomps.app.route('/', defaults={'path': ''})
