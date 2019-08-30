@@ -58,7 +58,7 @@ def create_bot_POST(group_id, port, callback_url=None):
 
 	# Status 201 is success.
 	if response.status_code != 201:
-		print("Error POST requesting GroupMe servers when initializing your Chomps.  Status code: " + str(response.status_code))
+		print(("Error POST requesting GroupMe servers when initializing your Chomps.  Status code: " + str(response.status_code)))
 		exit(1)
 	converted_response = _convert_keys_to_string(response.json())
 

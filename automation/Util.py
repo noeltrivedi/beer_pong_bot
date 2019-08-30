@@ -23,4 +23,4 @@ def _convert_keys_to_string(dictionary):
     if not isinstance(dictionary, dict):
         return dictionary
     return dict((str(k), _convert_keys_to_string(v)) 
-        for k, v in dictionary.items())
+        for k, v in list(dictionary.items()))

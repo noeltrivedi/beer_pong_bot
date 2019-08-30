@@ -6,7 +6,7 @@ import json
 import logging
 import time
 import chomps.chomps as chomps
-from BaseHTTPServer import HTTPServer
+from http.server import HTTPServer
 from multiprocessing import Process
 from chomps.messagerouter import MessageRouter
 
@@ -35,8 +35,8 @@ try:
     chomps_proc = Process(target=chomps.listen, args=(HTTPServer, MessageRouter, config['listening_port'],)) # blocking call in separate process
     chomps_proc.start()
     while True:
-        message = input("chomps: ")
-        confirm = input("Type yes to confirm: ")
+        message = raw_input("chomps: ")
+        confirm = raw_input("Type yes to confirm: ")
         if confirm.lower() == 'yes':
             print('Sending: "{}"'.format(message))
             time.sleep(1)

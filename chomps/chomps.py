@@ -100,14 +100,14 @@ class Chomps(object):
     @property
     def canonical_names(self):
         canonical_names = []
-        for player, _ in self.player_data.items():
+        for player, _ in list(self.player_data.items()):
             canonical_names.append(player)
         return canonical_names
 
     @property
     def season_stats(self):
         season_stats = {'games': 0, 'cups': 0, 'beers': 0, 'trolls': 0}
-        for _, player_stats in self.player_data.items():
+        for _, player_stats in list(self.player_data.items()):
             season_stats['games'] += player_stats['games']
             season_stats['cups'] += player_stats['cups']
             season_stats['beers'] += player_stats['beers_drank']
@@ -117,7 +117,7 @@ class Chomps(object):
 
     def get_table_data(self):
         table_data = {}
-        for player_name in self.player_data.keys():
+        for player_name in list(self.player_data.keys()):
             game_count = self.player_data[player_name]['games']
             cup_count = self.player_data[player_name]['cups']
             win_count = self.player_data[player_name]['wins']
