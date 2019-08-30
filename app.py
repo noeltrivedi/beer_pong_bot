@@ -47,13 +47,19 @@ web_chomps = WebChomps()
 cors = CORS(web_chomps.app, resources={r'/api/*': {'origins': variables.ACCEPTED_ORIGINS}}, supports_credentials=True)
 
 
-@web_chomps.app.route('/', defaults={'path': ''})
-@web_chomps.app.route('/<path:path>')
+@web_chomps.app.route('/', defaults={'path': ''}, methods=['GET'])
+@web_chomps.app.route('/<path:path>', methods=['GET'])
 def serve(path):
     # Serve React App
     if path != '' and os.path.exists(web_chomps.app.static_folder + path):
+        message = 'Serving path: {}'.format(os.path.join(web_chomps.app.static_folder, path))
+        web_chomps.app.logger.info(message)
+        print(message)
         return send_from_directory(web_chomps.app.static_folder, path)
     else:
+        message = 'Serving path: {}'.format(os.path.join(web_chomps.app.static_folder, 'index.html'))
+        web_chomps.app.logger.info(message)
+        print(message)
         return send_from_directory(web_chomps.app.static_folder, 'index.html')
 
 
