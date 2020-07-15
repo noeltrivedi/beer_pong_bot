@@ -1,0 +1,19 @@
+@font-face {
+	font-family: BrandonGrotesque_Med;
+	src: url('./fonts/BrandonGrotesque/Brandon_med.otf');
+}
+
+@font-face {
+	font-family: BrandonGrotesque_MedIt;
+	src: url('./fonts/BrandonGrotesque/Brandon_med_it.otf');
+}
+
+@font-face {
+	font-family: BrandonGrotesque_Light;
+	src: url('./fonts/BrandonGrotesque/Brandon_light.otf');
+}
+
+@font-face {
+	font-family: BrandonGrotesque_LightIt;
+	src: url('./fonts/BrandonGrotesque/Brandon_light_it.otf');
+}

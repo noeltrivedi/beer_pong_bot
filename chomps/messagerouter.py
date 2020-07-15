@@ -1,6 +1,6 @@
-from BaseHTTPServer import BaseHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler
 import json
-import chomps
+from . import chomps
 #route messages to the bot
 class MessageRouter(BaseHTTPRequestHandler):
     def do_POST(self):
@@ -9,3 +9,6 @@ class MessageRouter(BaseHTTPRequestHandler):
         data = json.loads(post_body)
 
         chomps.bot.receive_message(data['text'])
+
+    def do_GET(self):
+        pass

@@ -1,26 +1,32 @@
-from BaseHTTPServer import HTTPServer
+from http.server import HTTPServer
 import re
 import os.path
 import json
-import urllib2
-import httplib
+import urllib.request
+import urllib.error
+import urllib.parse
 import logging
+import math
 
 from .sheetsdecorator import SheetsDecorator
 from .messagerouter import MessageRouter
 
 log_file_name = os.path.join('.', 'data', 'stat_log.txt')
 player_data_file = os.path.join('.', 'data', 'player_data.json')
+logger = logging.getLogger(__name__)
 
-class Chomps():
+RETIRED_USERS = []
+
+
+class Chomps(object):
     def __init__(self, bot_id, debug=False, use_spreadsheet=True, google_credentials_filename=None):
-        self.logger = logging.getLogger('chomps')
+        self.logger = logger
         if debug:
             self._attach_debug_handler()
         self.bot_id = bot_id
         self.debug = debug
 
-        #should log to the stat log - only disabled when running over old data
+        # Should log to the stat log - only disabled when running over old data
         self.should_log = True
 
         if use_spreadsheet:
@@ -35,7 +41,6 @@ class Chomps():
         if not os.path.exists(log_file_name):
             fn = open(log_file_name, "w")
             fn.close()
-
         self.logger.info("Chomps initialized; bot_id=%s; debug=%s; use_spreadsheet=%s", bot_id, debug, use_spreadsheet)
 
     def _attach_debug_handler(self):
@@ -45,9 +50,8 @@ class Chomps():
         ch.setFormatter(formatter)
         self.logger.addHandler(ch)
 
-
     def _init_regexes(self):
-        #regex building blocks
+        # RegEx building blocks
         regex_name = r'((?:\w+ ?){1,2}) ?'
         regex_cup_count = r'\((\d+)\) ?'
 
@@ -77,7 +81,7 @@ class Chomps():
             ('Help Request', self.help_regex, self.handle_help_request),
             ('Update Command', self.update_regex, self.handle_update_command),
             ('Register Command', self.register_regex, self.handle_register),
-            ]
+        ]
 
     def _load_player_data(self):
         self.nickname_map = {}
@@ -88,10 +92,53 @@ class Chomps():
                     for nn in self.player_data[name]['nicknames']:
                         self.nickname_map[nn] = name
         else:
-            #create the player data file as an empty dict
-            #when players are registered, they'll get added normally
+            # Create the player data file as an empty dict
+            # When players are registered, they'll get added normally
             self.player_data = {}
             self.persist_player_data()
+
+    @property
+    def canonical_names(self):
+        canonical_names = []
+        for player, _ in list(self.player_data.items()):
+            canonical_names.append(player)
+        return canonical_names
+
+    @property
+    def season_stats(self):
+        season_stats = {'games': 0, 'cups': 0, 'beers': 0, 'trolls': 0}
+        for _, player_stats in list(self.player_data.items()):
+            season_stats['games'] += player_stats['games']
+            season_stats['cups'] += player_stats['cups']
+            season_stats['beers'] += player_stats['beers_drank']
+            season_stats['trolls'] += player_stats['trolls']
+        season_stats['games'] /= 4
+        return season_stats
+
+    def get_table_data(self):
+        table_data = {}
+        for player_name in list(self.player_data.keys()):
+            game_count = self.player_data[player_name]['games']
+            cup_count = self.player_data[player_name]['cups']
+            win_count = self.player_data[player_name]['wins']
+            was_carried_rate = self.player_data[player_name]['games_was_carried'] / float(
+                self.player_data[player_name]['wins']) * 100 if self.player_data[player_name]['wins'] is not 0 else 0
+            carry_rate = self.player_data[player_name]['games_carried'] / float(
+                self.player_data[player_name]['wins']) * 100 if self.player_data[player_name]['wins'] is not 0 else 0
+            troll_count = self.player_data[player_name]['trolls']
+            beer_count = self.player_data[player_name]['beers_drank']
+            common_partner = self.get_most_common_partner(player_name)
+            table_data[player_name] = {
+                'games': game_count,
+                'cups': cup_count,
+                'wins': win_count,
+                'carriedRate': was_carried_rate,
+                'carryRate': carry_rate,
+                'trolls': troll_count,
+                'beers': beer_count,
+                'mcp': common_partner
+            }
+        return table_data
 
     def receive_message(self, message):
         for tag, regex, action in self.regex_action_map:
@@ -118,7 +165,7 @@ class Chomps():
             'games_was_carried': 0,
             'cups_left': 0,
             'games_carried': 0
-            }
+        }
 
         #add this new player to every current player's teammate_Stats
         for player in self.player_data:
@@ -133,8 +180,8 @@ class Chomps():
             'beers_drank': 0,
             'games_carried': 0,
             'nicknames': [
-              name.lower()
-              ],
+                name.lower()
+            ],
             'wins': 0,
             'teammate_stats' : {}
         }
@@ -196,6 +243,8 @@ class Chomps():
         if canonical_name not in self.player_data:
             self.send_message('Name {} was not found!'.format(canonical_name))
             return
+        elif nickname == 'roger' and canonical_name == 'whiskerino':
+            self.send_message('Player Whiskerino prohibited from having nickname: Roger')
         elif nickname in self.nickname_map:
             self.send_message('Player {} already has {} as a nickname!'.format(self.nickname_map[nickname], nickname))
         else:
@@ -213,7 +262,12 @@ class Chomps():
     def handle_team_stat_request(self, m):
         player_one = self.convert_nickname_to_name(m.group(1))
         player_two = self.convert_nickname_to_name(m.group(2))
-
+        if player_one not in self.player_data:
+            self.send_message("Unable to return stats. Player name \"{}\" not found in the nickname database".format(player_one))
+            return
+        if player_two not in self.player_data:
+            self.send_message("Unable to return stats. Player name \"{}\" not found in the nickname database".format(player_two))
+            return
         stats = self.player_data[player_one]['teammate_stats'][player_two]
         if stats['games'] is 0:
             self.send_message('{} and {} have never played together!'.format(player_one, player_two))
@@ -233,8 +287,37 @@ class Chomps():
             player_two,
             round(float(stats['games_was_carried'])/stats['wins']*100, 2) if stats['wins'] is not 0 else 0,
             round(float(stats['cups_left'])/stats['wins'], 2) if stats['wins'] is not 0 else 0
-            )
+        )
         self.send_message(stat_string)
+
+    def get_team_stats(self, player_one, player_two):
+        player_one = self.convert_nickname_to_name(player_one)
+        player_two = self.convert_nickname_to_name(player_two)
+        if player_one not in self.player_data:
+            return {'error': True,
+                    'message': 'Unable to return stats. \"{}\" not found in the nickname database.'.format(player_one)}
+        if player_two not in self.player_data:
+            return {'error': True,
+                    'message': 'Unable to return stats. \"{}\" not found in the nickname database.'.format(player_two)}
+        stats = self.player_data[player_one]['teammate_stats'][player_two]
+        if stats['games'] is 0:
+            return {'error': True,
+                    'message': '{} and {} have never played together!'.format(player_one, player_two)}
+        return {
+            'games': stats['games'],
+            'winPct': round(float(stats['wins'])/stats['games']*100, 2),
+            'cupsLeft': round(float(stats['cups_left'])/stats['wins'], 2) if stats['wins'] is not 0 else 0,
+            'player1': {
+                'cpg': round(float(stats['player_cups'])/stats['games'], 2),
+                'carryPct': round(float(stats['games_carried'])/stats['wins']*100, 2) if stats['wins'] is not 0 else 0,
+            },
+            'player2': {
+                'cpg': round(float(stats['teammate_cups'])/stats['games'], 2),
+                'carryPct': round(float(stats['games_was_carried'])/stats['wins']*100, 2) if stats['wins'] is not 0 else 0,
+            }
+        }
+
+
 
     def handle_player_stat_request(self, m):
         player_name = self.convert_nickname_to_name(m.group(1))
@@ -258,28 +341,28 @@ class Chomps():
             return
 
         stat_string = ("Player Name: {}\n"
-        "Total Cups: {}\n"
-        "Win %: {:0.2f}%\n"
-        "Most Common Partner: {}\n"
-        "% Wins Carried: {:0.2f}%\n"
-        "% Wins Was Carried: {:0.2f}%\n"
-        "Cups/Game: {:0.2f}\n"
-        "Times Trolled: {}\n"
-        "Total Beers Drank: {:0.2f}\n"
-        "Total Win Count: {}\n"
-        "Total Game Count: {}\n"
-        ).format(player_name,
-            cupCount,
-            (float(winCount)/float(gameCount) * 100),
-            commonPartner,
-            carry_rate,
-            was_carried_rate,
-            float(cupCount)/float(gameCount),
-            trollCount,
-            beerCount,
-            winCount,
-            gameCount
-            )
+                       "Total Cups: {}\n"
+                       "Win %: {:0.2f}%\n"
+                       "Most Common Partner: {}\n"
+                       "% Wins Carried: {:0.2f}%\n"
+                       "% Wins Was Carried: {:0.2f}%\n"
+                       "Cups/Game: {:0.2f}\n"
+                       "Times Trolled: {}\n"
+                       "Total Beers Drank: {:0.2f}\n"
+                       "Total Win Count: {}\n"
+                       "Total Game Count: {}\n"
+                       ).format(player_name,
+                                cupCount,
+                                (float(winCount)/float(gameCount) * 100),
+                                commonPartner,
+                                carry_rate,
+                                was_carried_rate,
+                                float(cupCount)/float(gameCount),
+                                trollCount,
+                                beerCount,
+                                winCount,
+                                gameCount
+                                )
         self.send_message(stat_string)
 
     def handle_game_results(self, m):
@@ -308,6 +391,10 @@ class Chomps():
                 self.send_message(self.success_message)
 
     def add_new_nickname(self, canonical_name, nickname):
+        if nickname.lower() == 'chomps' or nickname.lower() == 'roger':
+            self.send_message('That nickname assignment is prohibited.')
+            return
+
         self.player_data[canonical_name]['nicknames'].append(nickname)
         self.nickname_map[nickname] = canonical_name
         self.persist_player_data()
@@ -339,13 +426,17 @@ class Chomps():
                 self.logger.warning('Unable to log stats. Player name \"%s\" not found in nickname database', player[0])
                 self.send_message("Unable to log stats. Player name \"{}\" not found in nickname database".format(player[0]))
                 break
+            elif player[0].strip().lower() in RETIRED_USERS:
+                all_players_found = False
+                self.send_message("Unable to log stats. Player \"{}\" is retired.".format(player[0]))
+                break
         return all_players_found
 
     def update_beer_count(self):
         losing_team_cups = int(self.player_stats[2][1]) + int(self.player_stats[3][1])
 
         for i in range(4):
-            beers_drank= 0
+            beers_drank = 0
             if i < 2:
                 beers_drank = float(losing_team_cups)/10
             else:
@@ -356,12 +447,14 @@ class Chomps():
     def send_message(self, message):
         self.logger.info("Sending message; msg=\"%s\"", message)
         if not self.debug:
-            data = {"bot_id": self.bot_id, "text": str(message)}
-            req = urllib2.Request('https://api.groupme.com/v3/bots/post')
-            req.add_header('Content-Type', 'application/json')
+            for i in range(int(math.ceil(len(message)/1000))+1):
+                message_part = message[i*1000:(i+1)*1000]
+                data = {"bot_id": self.bot_id, "text": str(message_part)}
+                req = urllib.request.Request('https://api.groupme.com/v3/bots/post')
+                req.add_header('Content-Type', 'application/json')
 
-            response = urllib2.urlopen(req, json.dumps(data))
-            response.close()
+                response = urllib.request.urlopen(req, json.dumps(data))
+                response.close()
 
     def update_player_stats(self, player, teammate, cups_left, won):
         if won:
@@ -372,8 +465,8 @@ class Chomps():
             self.player_data[player[0]]['trolls'] += 1
             self.send_message('HAHA {} IS A TROLL'.format(player[0].upper()))
 
-        #use tmp here because the full thing is too long to consistently type
-        #the = operator is a shallow copy so this is fine anyway (probably)
+        # Use tmp here because the full thing is too long to consistently type
+        # the = operator is a shallow copy so this is fine anyway (probably)
         tmp = self.player_data[player[0]]['teammate_stats'][teammate[0]]
         tmp['cups_left'] += cups_left
         if won:
@@ -426,7 +519,7 @@ class Chomps():
         if nickname.strip().lower() in self.nickname_map:
             return self.nickname_map[nickname.strip().lower()]
         else:
-            return nickname.strip()
+            return nickname.strip().lower()
 
     def update_spreadsheet(self):
         if self.spread is not None:
@@ -440,6 +533,13 @@ class Chomps():
                 self.spread.update_player_stats(player, self.player_data[player])
             self.spread.update_game_participation(self.player_data)
 
+    def listen(self, server_class=HTTPServer, handler_class=MessageRouter, port=80):
+        server_address = ('', port)
+        httpd = server_class(server_address, handler_class)
+        logger.info('Listening for messages on port %d...', port)
+        httpd.serve_forever()
+
+
 def initialize(bot_id=0, debug=False, use_spreadsheet=True, service_credentials=None):
     global bot
     bot = Chomps(
@@ -447,23 +547,18 @@ def initialize(bot_id=0, debug=False, use_spreadsheet=True, service_credentials=
         debug=debug,
         use_spreadsheet=use_spreadsheet,
         google_credentials_filename=service_credentials
-        )
+    )
     return bot
 
-def listen(server_class=HTTPServer, handler_class=MessageRouter, port=80):
-    server_address = ('', port)
-    httpd = server_class(server_address, handler_class)
-    logging.getLogger('chomps').info('Listening for messages on port %d...', port)
-    httpd.serve_forever()
 
 def reload_data():
     bot.should_log = False
 
     debug = bot.debug
-    bot.debug = True #don't want to send messages here
+    bot.debug = True  # Don't want to send messages here
 
     bot.clear_game_record()
-    #load in stats and pass into bot
+    # Load in stats and pass into bot
     with open(log_file_name) as stats:
         for line in stats:
             bot.receive_message(line)
@@ -471,3 +566,4 @@ def reload_data():
 
     bot.should_log = True
     bot.debug = debug
+    bot.persist_player_data()
